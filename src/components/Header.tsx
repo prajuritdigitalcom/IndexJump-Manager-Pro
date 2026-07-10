@@ -25,7 +25,7 @@ export default function Header() {
 
   // Compute stats
   const totalTokens = tokens.length;
-  const totalBalance = tokens.reduce((acc, t) => acc + t.balance, 0);
+  const availableBalance = tokens.reduce((acc, t) => acc + Math.max(0, t.balance - 1), 0);
 
   const applyTheme = () => {
     const root = window.document.documentElement;
@@ -74,14 +74,14 @@ export default function Header() {
 
       {/* Global Context Indicators */}
       <div className="flex items-center gap-4">
-        {/* Total balance Quick Card */}
+        {/* Available balance Quick Card */}
         {totalTokens > 0 && (
           <div className="hidden md:flex items-center gap-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2 text-sm shadow-sm">
             <Coins className="h-4 w-4 text-amber-500" />
             <div className="flex flex-col">
-              <span className="text-[10px] text-zinc-500 font-mono uppercase leading-none">Total Balance</span>
+              <span className="text-[10px] text-zinc-500 font-mono uppercase leading-none">Available Balance</span>
               <span className="font-bold text-zinc-800 dark:text-zinc-200 font-mono">
-                {formatNumber(totalBalance)}
+                {formatNumber(availableBalance)}
               </span>
             </div>
             <button

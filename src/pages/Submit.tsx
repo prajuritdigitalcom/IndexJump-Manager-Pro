@@ -109,6 +109,7 @@ export default function Submit() {
     stopIndexing,
     pauseIndexing,
     resumeIndexing,
+    submissionError,
   } = useIndexStore();
 
   // Component states
@@ -312,9 +313,16 @@ export default function Submit() {
             />
 
             <div className="mt-4 flex items-center justify-between">
-              <span className="text-xs text-zinc-400 dark:text-zinc-500 font-mono">
-                Tokens Loaded: {tokens.length}
-              </span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-zinc-500 font-semibold font-mono">
+                  Tokens Loaded: {tokens.length}
+                </span>
+                {tokens.length > 0 && (
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold font-mono">
+                    Available Balance: {formatNumber(tokens.reduce((acc, t) => acc + Math.max(0, t.balance - 1), 0))} credits
+                  </span>
+                )}
+              </div>
               <button
                 id="btn-check-balance-action"
                 onClick={checkAllBalances}
@@ -333,6 +341,7 @@ export default function Submit() {
                     <tr className="text-[10px] uppercase font-bold text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">
                       <th className="py-1">API Token</th>
                       <th>Balance</th>
+                      <th>Available</th>
                       <th>Status</th>
                       <th>Health</th>
                     </tr>
@@ -343,8 +352,11 @@ export default function Submit() {
                         <td className="py-2 font-mono font-semibold text-zinc-800 dark:text-zinc-200">
                           {tok.token.substring(0, 10)}...{tok.token.substring(tok.token.length - 4)}
                         </td>
-                        <td className="font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                        <td className="font-mono text-zinc-500">
                           {formatNumber(tok.balance)}
+                        </td>
+                        <td className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                          {formatNumber(Math.max(0, tok.balance - 1))}
                         </td>
                         <td>
                           <span className={`px-2 py-0.5 rounded-full text-[9px] font-semibold uppercase ${
@@ -640,6 +652,17 @@ export default function Submit() {
               )}
             </div>
           </div>
+
+          {/* Submission Error Alert */}
+          {submissionError && (
+            <div className="p-4 mb-4 rounded-xl border border-red-200 bg-red-50 text-red-800 text-xs flex items-start gap-2.5 shadow-sm">
+              <AlertTriangle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Peringatan: Token Tidak Cukup</p>
+                <p className="mt-1 leading-relaxed">{submissionError}</p>
+              </div>
+            </div>
+          )}
 
           {/* Trigger action controls */}
           <div className="flex gap-4 p-1">

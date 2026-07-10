@@ -125,6 +125,10 @@ interface IndexState {
   requestTimeout: number;
   setRequestTimeout: (v: number) => void;
 
+  // Error Banner State
+  submissionError: string | null;
+  setSubmissionError: (err: string | null) => void;
+
   // Controller Actions
   startIndexing: () => Promise<void>;
   stopIndexing: () => void;
@@ -192,9 +196,9 @@ export const useIndexStore = create<IndexState>((set, get) => ({
   // Token Store
   tokens: [],
   rawTokensText: '',
-  setRawTokensText: (text) => set({ rawTokensText: text }),
+  setRawTokensText: (text) => set({ rawTokensText: text, submissionError: null }),
   setTokens: (tokens) => set({ tokens }),
-  clearTokens: () => set({ tokens: [], rawTokensText: '' }),
+  clearTokens: () => set({ tokens: [], rawTokensText: '', submissionError: null }),
 
   checkAllBalances: async () => {
     const { rawTokensText, settings, addLog } = get();
@@ -304,9 +308,13 @@ export const useIndexStore = create<IndexState>((set, get) => ({
 
   // URL Store
   rawUrlsText: '',
-  setRawUrlsText: (text) => set({ rawUrlsText: text }),
+  setRawUrlsText: (text) => set({ rawUrlsText: text, submissionError: null }),
   urls: [],
   setUrls: (urls) => set({ urls }),
+
+  // Error Banner State
+  submissionError: null,
+  setSubmissionError: (err) => set({ submissionError: err }),
 
   // Queue and workers state
   queue: [],
@@ -504,6 +512,20 @@ export const useIndexStore = create<IndexState>((set, get) => ({
     if (state.optShuffleUrls) {
       processingUrls = shuffleArray(processingUrls);
       state.addLog('info', 'URLs shuffled successfully.');
+    }
+
+    // Check Available Balance constraints
+    const totalTokens = get().tokens;
+    const availableBalance = totalTokens.reduce((acc, t) => acc + Math.max(0, t.balance - 1), 0);
+    
+    // We only validate if the balances have been checked (using optAutoCheckBalance or if checked balances are populated)
+    if (state.optAutoCheckBalance && processingUrls.length > availableBalance) {
+      const errMsg = `Token tidak cukup! Available Balance Anda hanya ${availableBalance} credit (karena sisa 1 credit per token wajib di-reserve), sedangkan URL yang dimasukkan ada ${processingUrls.length}. Silakan kurangi URL atau tambah token.`;
+      state.addLog('error', errMsg);
+      set({ submissionError: errMsg });
+      return;
+    } else {
+      set({ submissionError: null });
     }
 
     // Create Initial Queue

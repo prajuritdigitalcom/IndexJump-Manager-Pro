@@ -46,7 +46,7 @@ export default function Dashboard() {
 
   // Compute live state sums
   const totalTokensCount = tokens.length;
-  const totalBalance = tokens.reduce((acc, t) => acc + t.balance, 0);
+  const availableBalance = tokens.reduce((acc, t) => acc + Math.max(0, t.balance - 1), 0);
   
   // Historical aggregates
   const totalSubmittedHistorical = historySessions.reduce((acc, s) => acc + s.totalUrls, 0);
@@ -83,8 +83,8 @@ export default function Dashboard() {
     {
       id: 'stat-balance',
       title: 'Available Balance',
-      value: formatNumber(totalBalance),
-      sub: 'All active tokens pooled',
+      value: formatNumber(availableBalance),
+      sub: '1 credit per token is safely reserved',
       icon: Coins,
       color: 'from-amber-500/10 to-yellow-500/10 border-yellow-500/20 text-amber-500'
     },
