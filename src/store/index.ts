@@ -256,12 +256,19 @@ export const useIndexStore = create<IndexState>((set, get) => ({
           };
         } catch (err: any) {
           const status = err.response?.status;
+          const responseData = err.response?.data;
           let tokenStatus: TokenStatus = 'invalid';
           let msg = `Token validation failed [${tok.token.substring(0, 8)}...]`;
 
           if (status === 401) {
             tokenStatus = 'invalid';
             msg += ' - Invalid / Expired Token (401)';
+          } else if (status === 403) {
+            tokenStatus = 'invalid';
+            msg += ' - Authorization Error (403) from IndexJump. Check your token.';
+          } else if (status === 404) {
+            tokenStatus = 'offline';
+            msg += ' - Proxy Not Found (404). If deployed on Vercel, please check deployment log or serverless rewrite.';
           } else if (status === 429) {
             tokenStatus = 'rate_limited';
             msg += ' - Rate Limited (429)';
@@ -270,6 +277,11 @@ export const useIndexStore = create<IndexState>((set, get) => ({
             msg += ' - Provider Offline (503)';
           } else {
             msg += ` - Error: ${err.message || 'Network Timeout'}`;
+          }
+
+          if (responseData) {
+            const dataString = typeof responseData === 'object' ? JSON.stringify(responseData) : String(responseData);
+            msg += ` | Details: ${dataString.substring(0, 200)}`;
           }
 
           addLog('error', msg);
@@ -769,7 +781,15 @@ async function spawnWorker(workerId: string) {
       } catch (err: any) {
         responseTimeMs = Date.now() - startTime;
         const status = err.response?.status;
-        responseText = err.response?.data?.error || err.message || 'Timeout / Connection Failure';
+        const responseData = err.response?.data;
+        const detailsString = responseData
+          ? (typeof responseData === 'object' ? JSON.stringify(responseData) : String(responseData))
+          : '';
+        
+        responseText = responseData?.error || responseData?.msg || err.message || 'Timeout / Connection Failure';
+        if (detailsString) {
+          responseText += ` | Details: ${detailsString.substring(0, 250)}`;
+        }
 
         // Error Handlers defined in PRD
         if (status === 401) {
