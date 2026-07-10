@@ -1,0 +1,6 @@
+{
+  "name": "IndexJump Manager Pro",
+  "description": "Automate bulk URL submissions to IndexJump using multiple API tokens with parallel workers, real-time queues, and live performance logging.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
