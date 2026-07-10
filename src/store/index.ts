@@ -20,7 +20,7 @@ import axios from 'axios';
 
 // Default App Settings
 const DEFAULT_SETTINGS: AppSettings = {
-  theme: 'dark', // default modern dark mode matching SaaS style
+  theme: 'light', // default to light mode
   defaultWorkerCount: 1, // safe standard to prevent speed spam
   defaultRetryCount: 1,  // safe standard retry count
   defaultRetryDelay: 'random', // randomized delay is the safest anti-spam tactic
@@ -40,8 +40,8 @@ interface ActiveWorkerInfo {
 
 interface IndexState {
   // Navigation
-  activeTab: 'dashboard' | 'submit' | 'history' | 'settings' | 'about';
-  setActiveTab: (tab: 'dashboard' | 'submit' | 'history' | 'settings' | 'about') => void;
+  activeTab: 'dashboard' | 'submit' | 'history';
+  setActiveTab: (tab: 'dashboard' | 'submit' | 'history') => void;
 
   // Settings
   settings: AppSettings;
@@ -152,7 +152,7 @@ export const useIndexStore = create<IndexState>((set, get) => ({
     try {
       const saved = await dbService.getSettings();
       if (saved) {
-        set({ settings: { ...DEFAULT_SETTINGS, ...saved } });
+        set({ settings: { ...DEFAULT_SETTINGS, ...saved, theme: 'light' } });
         // Set initial user inputs based on loaded settings
         set({
           workerCount: saved.defaultWorkerCount,

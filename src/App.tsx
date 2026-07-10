@@ -10,8 +10,6 @@ import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
 import Submit from './pages/Submit';
 import History from './pages/History';
-import Settings from './pages/Settings';
-import About from './pages/About';
 import { motion, AnimatePresence } from 'motion/react';
 import { dbService } from './utils/indexedDB';
 import { AlertTriangle, RotateCcw, X } from 'lucide-react';
@@ -88,10 +86,6 @@ export default function App() {
         return <Submit key="submit" />;
       case 'history':
         return <History key="history" />;
-      case 'settings':
-        return <Settings key="settings" />;
-      case 'about':
-        return <About key="about" />;
       default:
         return <Dashboard key="dashboard" />;
     }

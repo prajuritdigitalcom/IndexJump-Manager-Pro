@@ -6,13 +6,10 @@
 import React from 'react';
 import { useIndexStore } from '../store';
 import { 
-  Sun, 
-  Moon, 
   RefreshCw, 
   Coins, 
   Cpu, 
   CheckCircle,
-  HelpCircle
 } from 'lucide-react';
 import { formatNumber } from '../utils/helpers';
 
@@ -21,8 +18,6 @@ export default function Header() {
     activeTab, 
     tokens, 
     checkAllBalances, 
-    settings, 
-    updateSettings, 
     isProcessing,
     processedCount,
     totalUrlsToProcess
@@ -31,29 +26,16 @@ export default function Header() {
   // Compute stats
   const totalTokens = tokens.length;
   const totalBalance = tokens.reduce((acc, t) => acc + t.balance, 0);
-  const activeTokens = tokens.filter(t => t.status === 'ready').length;
 
-  const handleThemeToggle = () => {
-    const nextTheme = settings.theme === 'dark' ? 'light' : 'dark';
-    updateSettings({ theme: nextTheme });
-    applyTheme(nextTheme);
-  };
-
-  const applyTheme = (theme: 'light' | 'dark' | 'system') => {
+  const applyTheme = () => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark');
-    
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.add(theme);
-    }
+    root.classList.remove('dark');
+    root.classList.add('light');
   };
 
   React.useEffect(() => {
-    applyTheme(settings.theme);
-  }, [settings.theme]);
+    applyTheme();
+  }, []);
 
   // Tab Title helper
   const getTabTitle = () => {
@@ -61,8 +43,6 @@ export default function Header() {
       case 'dashboard': return 'Dashboard Overview';
       case 'submit': return 'Submit Queue Engine';
       case 'history': return 'Submission History';
-      case 'settings': return 'Application Settings';
-      case 'about': return 'About Software';
       default: return 'IndexJump Manager';
     }
   };
@@ -114,16 +94,6 @@ export default function Header() {
             </button>
           </div>
         )}
-
-        {/* Theme Toggle */}
-        <button
-          id="header-btn-toggle-theme"
-          onClick={handleThemeToggle}
-          className="h-10 w-10 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-[#fe4c6f] dark:hover:text-[#fe4c6f] transition-all duration-200 cursor-pointer shadow-sm"
-          title="Toggle Visual Theme"
-        >
-          {settings.theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </button>
 
         {/* Software brand signature */}
         <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#fe4c6f]/20 bg-[#fe4c6f]/5 text-[10px] font-mono font-semibold text-[#fe4c6f]">

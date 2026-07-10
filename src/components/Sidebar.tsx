@@ -9,8 +9,6 @@ import {
   LayoutDashboard, 
   Send, 
   History, 
-  Settings as SettingsIcon, 
-  Info,
   Terminal,
   Layers,
   ChevronLeft,
@@ -26,8 +24,6 @@ export default function Sidebar() {
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
     { id: 'submit', name: 'Submit Queue', icon: Send },
     { id: 'history', name: 'History Logs', icon: History },
-    { id: 'settings', name: 'Settings', icon: SettingsIcon },
-    { id: 'about', name: 'About Software', icon: Info },
   ] as const;
 
   return (
