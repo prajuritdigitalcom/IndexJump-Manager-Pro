@@ -122,12 +122,12 @@ export default function Submit() {
   // File Input Refs
   const tokenFileRef = useRef<HTMLInputElement>(null);
   const urlFileRef = useRef<HTMLInputElement>(null);
-  const logEndRef = useRef<HTMLDivElement>(null);
+  const terminalScrollRef = useRef<HTMLDivElement>(null);
 
   // Auto Scroll Logs
   React.useEffect(() => {
-    if (logEndRef.current) {
-      logEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (terminalScrollRef.current) {
+      terminalScrollRef.current.scrollTop = terminalScrollRef.current.scrollHeight;
     }
   }, [logs]);
 
@@ -751,7 +751,10 @@ export default function Submit() {
             </div>
 
             {/* Scrollable text container */}
-            <div className="flex-1 overflow-y-auto space-y-1.5 font-mono text-[10px] leading-relaxed pr-1 select-text">
+            <div 
+              ref={terminalScrollRef}
+              className="flex-1 overflow-y-auto space-y-1.5 font-mono text-[10px] leading-relaxed pr-1 select-text"
+            >
               {logs.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-zinc-600">
                   <span>SYSTEM ONLINE. STANDBY FOR QUEUE TRIGGER...</span>
@@ -772,7 +775,6 @@ export default function Submit() {
                   );
                 })
               )}
-              <div ref={logEndRef} />
             </div>
           </div>
 
