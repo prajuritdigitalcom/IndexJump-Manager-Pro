@@ -21,9 +21,9 @@ import axios from 'axios';
 // Default App Settings
 const DEFAULT_SETTINGS: AppSettings = {
   theme: 'dark', // default modern dark mode matching SaaS style
-  defaultWorkerCount: 4,
-  defaultRetryCount: 3,
-  defaultRetryDelay: '300ms',
+  defaultWorkerCount: 1, // safe standard to prevent speed spam
+  defaultRetryCount: 1,  // safe standard retry count
+  defaultRetryDelay: 'random', // randomized delay is the safest anti-spam tactic
   requestTimeout: 10,
   autoSave: true,
   notifications: true,
@@ -364,7 +364,7 @@ export const useIndexStore = create<IndexState>((set, get) => ({
   
   optRemoveDuplicates: true,
   setOptRemoveDuplicates: (v) => set({ optRemoveDuplicates: v }),
-  optShuffleUrls: false,
+  optShuffleUrls: true, // Default to true for anti-spam randomized pattern
   setOptShuffleUrls: (v) => set({ optShuffleUrls: v }),
   optSkipInvalid: true,
   setOptSkipInvalid: (v) => set({ optSkipInvalid: v }),
@@ -376,18 +376,18 @@ export const useIndexStore = create<IndexState>((set, get) => ({
   setOptSaveSession: (v) => set({ optSaveSession: v }),
   optResumePrevious: false,
   setOptResumePrevious: (v) => set({ optResumePrevious: v }),
-  optEnableParallel: true,
+  optEnableParallel: false, // Default to false (1 worker) for anti-spam safety
   setOptEnableParallel: (v) => set({ optEnableParallel: v }),
   optAutoCheckBalance: true,
   setOptAutoCheckBalance: (v) => set({ optAutoCheckBalance: v }),
   optAutoExport: false,
   setOptAutoExport: (v) => set({ optAutoExport: v }),
 
-  workerCount: 4,
+  workerCount: 1, // Default to 1
   setWorkerCount: (v) => set({ workerCount: v }),
-  retryCount: 3,
+  retryCount: 1,  // Default to 1 safe retry
   setRetryCount: (v) => set({ retryCount: v }),
-  retryDelay: '300ms',
+  retryDelay: 'random', // Default to random anti-spam delay
   setRetryDelay: (v) => set({ retryDelay: v }),
   requestTimeout: 10,
   setRequestTimeout: (v) => set({ requestTimeout: v }),
@@ -438,11 +438,11 @@ export const useIndexStore = create<IndexState>((set, get) => ({
     if (state.optAutoCheckBalance) {
       await state.checkAllBalances();
       tokenLines = get().tokens
-        .filter(t => t.status === 'ready' && t.balance > 0)
+        .filter(t => t.status === 'ready' && t.balance > 1)
         .map(t => t.token);
 
       if (tokenLines.length === 0) {
-        state.addLog('error', 'No ready tokens with available balance found after auto-check!');
+        state.addLog('error', 'No ready tokens with available balance > 1 found after auto-check! (1 credit is safely reserved for each token to prevent spam flags).');
         return;
       }
     } else {
@@ -687,13 +687,13 @@ async function spawnWorker(workerId: string) {
     
     // Also find an available API Token for this worker
     const tokens = currentState.tokens;
-    // Find first token that is 'ready' (balance > 0) and ideally not locked by another worker
+    // Find first token that is 'ready' (balance > 1) and ideally not locked by another worker
     // Or just any valid token if parallel workers share
-    const eligibleTokenIndex = tokens.findIndex(t => t.status === 'ready' && t.balance > 0);
+    const eligibleTokenIndex = tokens.findIndex(t => t.status === 'ready' && t.balance > 1);
     
     if (eligibleTokenIndex === -1) {
       // ALL TOKENS EMPTY OR INVALID! Halt and stop!
-      currentState.addLog('error', `[${workerId}] CRITICAL ERROR: No available API Tokens with remaining balance! Halting worker.`);
+      currentState.addLog('error', `[${workerId}] CRITICAL ERROR: No available API Tokens with remaining balance > 1 (1 credit is safely reserved for each token)! Halting worker.`);
       // Update queue item back to queued
       updatedQueue[nextItemIndex] = { ...targetItem, status: 'queued' };
       useIndexStore.setState({ queue: updatedQueue });
@@ -771,10 +771,15 @@ async function spawnWorker(workerId: string) {
         if (tokIndex !== -1) {
           const currentBal = updatedTokens[tokIndex].balance;
           const nextBal = currentBal > 0 ? currentBal - 1 : 0;
+          
+          if (nextBal === 1) {
+            currentState.addLog('warn', `Token [${assignedToken.token.substring(0, 8)}...] has reached the Safety Reserve Limit (1 credit remaining). Rotating to next token to avoid spam flags.`);
+          }
+          
           updatedTokens[tokIndex] = {
             ...updatedTokens[tokIndex],
             balance: nextBal,
-            status: nextBal === 0 ? 'empty' : 'ready'
+            status: nextBal <= 1 ? 'empty' : 'ready' // set empty if 1 or less so that balance indicator reflects it as depleted for indexing
           };
           useIndexStore.setState({ tokens: updatedTokens });
         }

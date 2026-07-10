@@ -113,6 +113,7 @@ export default function Submit() {
 
   // Component states
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [showAdvanced, setShowAdvanced] = React.useState(false);
   const [sortField, setSortField] = React.useState<'url' | 'status' | 'time' | 'timestamp'>('timestamp');
   const [sortAsc, setSortAsc] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -456,25 +457,31 @@ export default function Submit() {
             )}
           </div>
 
-          {/* Section 3 & 4: Bot & Processing Options */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm" id="processing-options-panel">
-            <div className="flex items-center gap-2 mb-4">
-              <Bot className="h-5 w-5 text-[#fe4c6f]" />
-              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                Section 3 & 4: Bot & Processing Options
-              </h3>
+          {/* Section 3, 4 & 5: Simplified Bot & Anti-Spam Safety Engine */}
+          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm space-y-6" id="simplified-safety-engine">
+            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 pb-4">
+              <div className="flex items-center gap-2">
+                <Bot className="h-5 w-5 text-[#fe4c6f]" />
+                <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
+                  Bot & Safety Engine
+                </h3>
+              </div>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                <span>Safe Mode Active</span>
+              </div>
             </div>
 
             {/* Bot Selection */}
-            <div className="space-y-2 mb-6">
+            <div className="space-y-2">
               <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 block">
-                Bot Selection Type
+                Bot Agent Profile
               </label>
               <select
                 id="select-bot-type"
                 value={selectedBot}
                 onChange={(e) => setSelectedBot(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#fe4c6f]/50"
+                className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#fe4c6f]/50 font-medium font-mono"
               >
                 <option value="GoogleBot">GoogleBot (Default Optimized)</option>
                 <option value="OpenAIBot">OpenAIBot (AI Indexing Core)</option>
@@ -482,105 +489,155 @@ export default function Submit() {
               </select>
             </div>
 
-            {/* Checkboxes List */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                { label: 'Remove Duplicate URL', value: optRemoveDuplicates, setter: setOptRemoveDuplicates },
-                { label: 'Shuffle URL List', value: optShuffleUrls, setter: setOptShuffleUrls },
-                { label: 'Skip Invalid URLs', value: optSkipInvalid, setter: setOptSkipInvalid },
-                { label: 'Retry Failed Requests', value: optRetryFailed, setter: setOptRetryFailed },
-                { label: 'Continue Automatically', value: optContinueAuto, setter: setOptContinueAuto },
-                { label: 'Save Active Sessions', value: optSaveSession, setter: setOptSaveSession },
-                { label: 'Enable Parallel Workers', value: optEnableParallel, setter: setOptEnableParallel },
-                { label: 'Auto Balance Verify', value: optAutoCheckBalance, setter: setOptAutoCheckBalance },
-                { label: 'Auto Export Results', value: optAutoExport, setter: setOptAutoExport },
-              ].map((opt, i) => (
-                <label 
-                  key={i} 
-                  className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-zinc-50 cursor-pointer select-none"
-                >
-                  <input
-                    type="checkbox"
-                    checked={opt.value}
-                    onChange={(e) => opt.setter(e.target.checked)}
-                    className="mt-0.5 rounded border-zinc-300 text-[#fe4c6f] focus:ring-[#fe4c6f]"
-                  />
-                  <span>{opt.label}</span>
-                </label>
-              ))}
+            {/* Automated Safety Rules List */}
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl p-4 border border-zinc-100 dark:border-zinc-900 space-y-3.5 text-xs">
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 p-1 rounded bg-[#fe4c6f]/10 text-[#fe4c6f] shrink-0">
+                  <Key className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-zinc-800 dark:text-zinc-100">Token Safety Reserve (Sisa 1)</h4>
+                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5 leading-relaxed">
+                    Tokens are automatically rotated before they run out. Once a token has <strong>1 credit</strong> remaining, the system shifts to the next token to avoid complete depletion or spam flags.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 p-1 rounded bg-[#fe4c6f]/10 text-[#fe4c6f] shrink-0">
+                  <Globe className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-zinc-800 dark:text-zinc-100">Natural Flow Simulation</h4>
+                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5 leading-relaxed">
+                    Operates with a single concurrent thread and mimics random organic user submissions with dynamic timeouts and simulated delays (randomized between 100ms–1000ms).
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 p-1 rounded bg-[#fe4c6f]/10 text-[#fe4c6f] shrink-0">
+                  <CheckCircle className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-zinc-800 dark:text-zinc-100">Smart URL Filtering</h4>
+                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5 leading-relaxed">
+                    The engine shuffles your batch automatically to break footprint patterns and filters out duplicate or invalid links, preserving your precious token quotas.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Section 5: Advanced Controls */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm" id="advanced-configs-panel">
-            <div className="flex items-center gap-2 mb-6">
-              <Settings2 className="h-5 w-5 text-[#fe4c6f]" />
-              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                Section 5: Advanced Settings
-              </h3>
-            </div>
+            {/* Collapsible Advanced Settings for power users */}
+            <div className="pt-2 border-t border-zinc-100 dark:border-zinc-900">
+              <button
+                id="btn-toggle-advanced-configs"
+                type="button"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="w-full py-2.5 px-4 text-xs font-bold text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 flex items-center justify-between transition-all rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900 cursor-pointer border border-dashed border-zinc-200 dark:border-zinc-800"
+              >
+                <span>{showAdvanced ? "Hide Custom Advanced Configurations" : "Show Custom Advanced Configurations"}</span>
+                <ChevronRight className={`h-4 w-4 transition-transform ${showAdvanced ? "rotate-90" : ""}`} />
+              </button>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
-              <div className="space-y-1.5">
-                <label className="font-semibold text-zinc-500 dark:text-zinc-400">Worker Count</label>
-                <select
-                  id="select-worker-count"
-                  value={workerCount}
-                  onChange={(e) => setWorkerCount(Number(e.target.value))}
-                  className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
+              {showAdvanced && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-4 space-y-6 pt-4 border-t border-zinc-100 dark:border-zinc-900/50"
                 >
-                  <option value={1}>1 Worker (Standard)</option>
-                  <option value={2}>2 Workers</option>
-                  <option value={4}>4 Workers</option>
-                  <option value={8}>8 Workers</option>
-                  <option value={16}>16 Workers (Ultra Parallel)</option>
-                </select>
-              </div>
+                  {/* Advanced settings section */}
+                  <div className="space-y-4">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Fine-Tune Submission Rules</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {[
+                        { label: 'Remove Duplicate URL', value: optRemoveDuplicates, setter: setOptRemoveDuplicates },
+                        { label: 'Shuffle URL List', value: optShuffleUrls, setter: setOptShuffleUrls },
+                        { label: 'Skip Invalid URLs', value: optSkipInvalid, setter: setOptSkipInvalid },
+                        { label: 'Retry Failed Requests', value: optRetryFailed, setter: setOptRetryFailed },
+                        { label: 'Continue Automatically', value: optContinueAuto, setter: setOptContinueAuto },
+                        { label: 'Save Active Sessions', value: optSaveSession, setter: setOptSaveSession },
+                        { label: 'Enable Parallel Workers', value: optEnableParallel, setter: setOptEnableParallel },
+                        { label: 'Auto Balance Verify', value: optAutoCheckBalance, setter: setOptAutoCheckBalance },
+                        { label: 'Auto Export Results', value: optAutoExport, setter: setOptAutoExport },
+                      ].map((opt, i) => (
+                        <label 
+                          key={i} 
+                          className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-zinc-50 cursor-pointer select-none"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={opt.value}
+                            onChange={(e) => opt.setter(e.target.checked)}
+                            className="mt-0.5 rounded border-zinc-300 text-[#fe4c6f] focus:ring-[#fe4c6f]"
+                          />
+                          <span>{opt.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-zinc-500 dark:text-zinc-400">Retry Count</label>
-                <select
-                  id="select-retry-count"
-                  value={retryCount}
-                  onChange={(e) => setRetryCount(Number(e.target.value))}
-                  className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
-                >
-                  <option value={1}>1 Retry</option>
-                  <option value={2}>2 Retries</option>
-                  <option value={3}>3 Retries</option>
-                  <option value={5}>5 Retries</option>
-                </select>
-              </div>
+                  <div className="grid grid-cols-2 gap-4 text-xs pt-2 border-t border-zinc-100 dark:border-zinc-900/30">
+                    <div className="space-y-1.5">
+                      <label className="font-semibold text-zinc-500 dark:text-zinc-400">Worker Count</label>
+                      <select
+                        id="select-worker-count"
+                        value={workerCount}
+                        onChange={(e) => setWorkerCount(Number(e.target.value))}
+                        className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
+                      >
+                        <option value={1}>1 Worker (Standard)</option>
+                        <option value={2}>2 Workers</option>
+                        <option value={4}>4 Workers</option>
+                        <option value={8}>8 Workers</option>
+                      </select>
+                    </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-zinc-500 dark:text-zinc-400">Retry Delay</label>
-                <select
-                  id="select-retry-delay"
-                  value={retryDelay}
-                  onChange={(e) => setRetryDelay(e.target.value as any)}
-                  className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
-                >
-                  <option value="random">Random Delay (100ms-1000ms)</option>
-                  <option value="100ms">100ms</option>
-                  <option value="300ms">300ms</option>
-                  <option value="500ms">500ms</option>
-                  <option value="1000ms">1000ms (Safe Anti-Limit)</option>
-                </select>
-              </div>
+                    <div className="space-y-1.5">
+                      <label className="font-semibold text-zinc-500 dark:text-zinc-400">Retry Count</label>
+                      <select
+                        id="select-retry-count"
+                        value={retryCount}
+                        onChange={(e) => setRetryCount(Number(e.target.value))}
+                        className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
+                      >
+                        <option value={1}>1 Retry</option>
+                        <option value={2}>2 Retries</option>
+                        <option value={3}>3 Retries</option>
+                      </select>
+                    </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-zinc-500 dark:text-zinc-400">Request Timeout</label>
-                <select
-                  id="select-request-timeout"
-                  value={requestTimeout}
-                  onChange={(e) => setRequestTimeout(Number(e.target.value))}
-                  className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
-                >
-                  <option value={5}>5 Seconds</option>
-                  <option value={10}>10 Seconds (Standard)</option>
-                  <option value={30}>30 Seconds</option>
-                </select>
-              </div>
+                    <div className="space-y-1.5">
+                      <label className="font-semibold text-zinc-500 dark:text-zinc-400">Retry Delay</label>
+                      <select
+                        id="select-retry-delay"
+                        value={retryDelay}
+                        onChange={(e) => setRetryDelay(e.target.value as any)}
+                        className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
+                      >
+                        <option value="random">Random Delay (100ms-1000ms)</option>
+                        <option value="100ms">100ms</option>
+                        <option value="500ms">500ms</option>
+                        <option value="1000ms">1000ms (Safe Anti-Limit)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="font-semibold text-zinc-500 dark:text-zinc-400">Request Timeout</label>
+                      <select
+                        id="select-request-timeout"
+                        value={requestTimeout}
+                        onChange={(e) => setRequestTimeout(Number(e.target.value))}
+                        className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
+                      >
+                        <option value={5}>5 Seconds</option>
+                        <option value={10}>10 Seconds (Standard)</option>
+                        <option value={30}>30 Seconds</option>
+                      </select>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </div>
 
