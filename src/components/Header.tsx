@@ -41,8 +41,8 @@ export default function Header() {
   const getTabTitle = () => {
     switch (activeTab) {
       case 'dashboard': return 'Ringkasan Dashboard';
-      case 'submit': return 'Mesin Antrean Submit';
-      case 'history': return 'Riwayat Submisi';
+      case 'submit': return 'Antrian Submit URL';
+      case 'history': return 'Riwayat Submit URL';
       default: return 'IndexJump Manager';
     }
   };

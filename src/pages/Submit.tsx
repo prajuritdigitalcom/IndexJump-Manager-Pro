@@ -420,7 +420,7 @@ export default function Submit() {
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5 text-[#fe4c6f]" />
                 <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                  Bagian 2: Input URL Target
+                  Bagian 2: Input URL
                 </h3>
               </div>
               <div className="flex items-center gap-2">
@@ -668,7 +668,7 @@ export default function Submit() {
               <div className="flex items-center gap-2">
                 <Globe className="h-4.5 w-4.5 text-[#fe4c6f]" />
                 <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                  Tabel Hasil Submisi Real-time
+                  Tabel Hasil Submit Real-time
                 </h3>
               </div>
 

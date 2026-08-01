@@ -23,8 +23,8 @@ export default function Sidebar() {
 
   const menuItems = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
-    { id: 'submit', name: 'Antrean Submit', icon: Send },
-    { id: 'history', name: 'Riwayat Submisi', icon: History },
+    { id: 'submit', name: 'Index URL', icon: Send },
+    { id: 'history', name: 'Riwayat', icon: History },
   ] as const;
 
   return (

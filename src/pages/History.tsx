@@ -95,7 +95,7 @@ export default function History() {
           <div className="space-y-1">
             <h3 className="text-sm font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-2">
               <Database className="h-4.5 w-4.5 text-[#fe4c6f]" />
-              <span>Bagian: Riwayat Penyimpanan Lokal</span>
+              <span>Riwayat Penyimpanan Lokal</span>
             </h3>
             <p className="text-xs text-zinc-400 dark:text-zinc-500">
               Semua data disimpan di sisi klien di dalam IndexedDB untuk menjaga privasi mutlak.

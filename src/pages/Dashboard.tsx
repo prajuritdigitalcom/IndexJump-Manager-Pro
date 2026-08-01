@@ -16,7 +16,6 @@ import {
   Zap, 
   Database,
   ArrowRight,
-  Sparkles,
   BarChart3
 } from 'lucide-react';
 import { formatNumber, formatDate } from '../utils/helpers';
@@ -131,15 +130,11 @@ export default function Dashboard() {
         
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-500/30 bg-pink-500/10 text-xs font-semibold text-[#fe4c6f]">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Panel Kontrol Platform SaaS</span>
-            </div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
               Selamat Datang di IndexJump Manager Pro
             </h2>
             <p className="text-zinc-400 max-w-xl text-sm leading-relaxed">
-              Otomatiskan pengiriman indeks URL dan backlink berkecepatan tinggi melalui worker paralel multi-token terdistribusi. Sangat cocok untuk alur kerja SEO skala besar.
+              Index lebih banyak URL dengan sistem rotasi token otomatis.
             </p>
           </div>
           <button
@@ -153,8 +148,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Primary Analytics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Primary Analytics Grid - 6 Boxes in 1 Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
         {statCards.map((card, i) => {
           const Icon = card.icon;
           return (
@@ -162,26 +157,22 @@ export default function Dashboard() {
               key={card.id}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className={`rounded-2xl border bg-white dark:bg-zinc-900/60 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden`}
+              transition={{ delay: i * 0.04 }}
+              className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition-all relative overflow-hidden"
               id={card.id}
             >
-              {/* Top spark */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+              <div className="flex items-center justify-between gap-1 mb-2">
+                <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400 truncate" title={card.title}>
                   {card.title}
                 </span>
-                <div className={`p-2.5 rounded-xl bg-gradient-to-br ${card.color} border flex items-center justify-center`}>
-                  <Icon className="h-5 w-5" />
+                <div className={`p-1.5 rounded-lg bg-gradient-to-br ${card.color} border shrink-0`}>
+                  <Icon className="h-3.5 w-3.5" />
                 </div>
               </div>
-              <div className="mt-4 space-y-1">
-                <h3 className="text-2xl font-black font-mono tracking-tight text-zinc-900 dark:text-zinc-100">
+              <div>
+                <h3 className="text-xl font-black font-mono tracking-tight text-zinc-900 dark:text-zinc-100 truncate">
                   {card.value}
                 </h3>
-                <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
-                  {card.sub}
-                </p>
               </div>
             </motion.div>
           );
@@ -189,16 +180,16 @@ export default function Dashboard() {
       </div>
 
       {/* Main Stats Segment: Progress Dial vs Activities */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5">
         
         {/* Dynamic Progress Indicator Ring */}
-        <div className="lg:col-span-1 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 flex flex-col items-center justify-center shadow-sm min-h-[380px]" id="dashboard-progress-ring-card">
-          <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 self-start mb-6 flex items-center gap-2">
-            <Zap className="h-4 w-4 text-[#fe4c6f]" />
+        <div className="lg:col-span-1 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 flex flex-col items-center justify-between shadow-sm" id="dashboard-progress-ring-card">
+          <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 self-start mb-3 flex items-center gap-2">
+            <Zap className="h-3.5 w-3.5 text-[#fe4c6f]" />
             <span>Progres Antrean Aktif</span>
           </h3>
 
-          <div className="relative h-44 w-44 flex items-center justify-center">
+          <div className="relative h-32 w-32 my-1 flex items-center justify-center">
             {/* SVG Progress Ring */}
             <svg className="absolute inset-0 h-full w-full transform -rotate-90" viewBox="0 0 100 100">
               <circle
@@ -226,29 +217,29 @@ export default function Dashboard() {
             
             {/* Value Indicator */}
             <div className="text-center">
-              <span className="text-3xl font-black font-mono text-zinc-900 dark:text-zinc-50">
+              <span className="text-2xl font-black font-mono text-zinc-900 dark:text-zinc-50">
                 {progressPercent}%
               </span>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mt-1">
+              <p className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold mt-0.5">
                 Selesai
               </p>
             </div>
           </div>
 
-          <div className="w-full mt-6 space-y-3.5 border-t border-zinc-100 dark:border-zinc-900 pt-5">
-            <div className="flex justify-between text-xs">
+          <div className="w-full mt-3 space-y-2 border-t border-zinc-100 dark:border-zinc-900 pt-3">
+            <div className="flex justify-between text-[11px]">
               <span className="text-zinc-500 font-medium">Status Pekerjaan</span>
               <span className={`font-semibold ${isProcessing ? 'text-emerald-500' : 'text-zinc-400'}`}>
                 {isProcessing ? 'Memproses Antrean' : 'Siap / Standby'}
               </span>
             </div>
-            <div className="flex justify-between text-xs">
+            <div className="flex justify-between text-[11px]">
               <span className="text-zinc-500 font-medium">Worker Aktif</span>
               <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
                 {isProcessing ? tokens.filter(t => t.status === 'ready').length : 0} Dialokasikan
               </span>
             </div>
-            <div className="flex justify-between text-xs">
+            <div className="flex justify-between text-[11px]">
               <span className="text-zinc-500 font-medium">URL Diproses</span>
               <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
                 {processedCount} / {totalUrlsToProcess}
@@ -258,17 +249,17 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Session History List */}
-        <div className="lg:col-span-2 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 flex flex-col justify-between shadow-sm" id="dashboard-history-feed">
+        <div className="lg:col-span-2 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 flex flex-col justify-between shadow-sm" id="dashboard-history-feed">
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
-                <Database className="h-4 w-4 text-[#fe4c6f]" />
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+                <Database className="h-3.5 w-3.5 text-[#fe4c6f]" />
                 <span>Riwayat Sesi Terakhir</span>
               </h3>
               <button
                 id="dashboard-btn-all-history"
                 onClick={() => setActiveTab('history')}
-                className="text-xs text-[#fe4c6f] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-[11px] text-[#fe4c6f] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <span>Lihat Semua Riwayat</span>
                 <ArrowRight className="h-3 w-3" />
@@ -276,43 +267,43 @@ export default function Dashboard() {
             </div>
 
             {historySessions.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
-                <BarChart3 className="h-10 w-10 text-zinc-300 dark:text-zinc-700 mb-2" />
-                <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">Belum ada riwayat sesi pengiriman</span>
-                <p className="text-xs text-zinc-400 dark:text-zinc-500 max-w-xs mt-1">
-                  Setelah Anda memulai pengiriman di tab "Antrean Submit", log sesi lengkap Anda akan muncul di sini.
+              <div className="flex flex-col items-center justify-center py-6 text-center text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
+                <BarChart3 className="h-7 w-7 text-zinc-300 dark:text-zinc-700 mb-1.5" />
+                <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400">Belum ada riwayat sesi pengiriman</span>
+                <p className="text-[11px] text-zinc-400 dark:text-zinc-500 max-w-xs mt-0.5">
+                  Setelah Anda memulai pengiriman di tab "Index URL", log sesi lengkap Anda akan muncul di sini.
                 </p>
               </div>
             ) : (
-              <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1">
+              <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
                 {historySessions.slice(0, 4).map((session) => (
                   <div
                     key={session.id}
-                    className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/30 flex items-center justify-between hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+                    className="p-2.5 rounded-xl border border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/30 flex items-center justify-between hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
                   >
-                    <div className="space-y-1">
-                      <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
                         {formatDate(session.timestamp)}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
+                        <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
                           {session.totalUrls} URL Dikirim
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
                           {session.bot}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <span className="text-xs text-emerald-500 font-semibold block">
+                        <span className="text-[11px] text-emerald-500 font-semibold block">
                           {session.successCount} Berhasil
                         </span>
-                        <span className="text-xs text-rose-500 font-semibold block">
+                        <span className="text-[11px] text-rose-500 font-semibold block">
                           {session.failedCount} Gagal
                         </span>
                       </div>
-                      <span className={`text-xs px-2.5 py-1 rounded-full font-semibold uppercase font-mono ${
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase font-mono ${
                         session.status === 'completed' 
                           ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
                           : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
@@ -326,9 +317,9 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="border-t border-zinc-100 dark:border-zinc-900 pt-4 mt-6 text-xs text-zinc-500 flex items-center gap-2 justify-between">
+          <div className="border-t border-zinc-100 dark:border-zinc-900 pt-3 mt-3 text-[11px] text-zinc-500 flex items-center gap-2 justify-between">
             <span className="flex items-center gap-1">
-              <Activity className="h-3.5 w-3.5 text-pink-500" />
+              <Activity className="h-3 w-3 text-pink-500" />
               Total Akumulasi: {formatNumber(totalSubmittedHistorical)} Dikirim • {formatNumber(totalSuccessHistorical)} Terindeks
             </span>
             <span className="font-mono text-[10px]">
