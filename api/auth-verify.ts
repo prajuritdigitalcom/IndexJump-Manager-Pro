@@ -27,12 +27,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  const correctPassword = process.env.PASSWORD;
-  const sessionSecret = process.env.AUTH_SESSION_SECRET;
+  const correctPassword = process.env.PASSWORD || process.env.SERVER_ACCESS_PASSWORD;
+  const sessionSecret = process.env.AUTH_SESSION_SECRET || correctPassword || 'ij-session-secret-fallback';
 
-  if (!correctPassword || !sessionSecret) {
-    console.error('[auth-verify] PASSWORD atau AUTH_SESSION_SECRET belum diset di Environment Variables');
-    return res.status(500).json({ success: false, error: 'Server belum dikonfigurasi. Hubungi admin.' });
+  if (!correctPassword) {
+    console.error('[auth-verify] PASSWORD belum diset di Environment Variables');
+    return res.status(500).json({ success: false, error: 'Server belum dikonfigurasi: Variable PASSWORD belum diset di Vercel.' });
   }
 
   // 2. Verifikasi password

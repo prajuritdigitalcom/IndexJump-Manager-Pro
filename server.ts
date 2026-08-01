@@ -203,12 +203,12 @@ async function startServer() {
       });
     }
 
-    const correctPassword = process.env.PASSWORD;
-    const sessionSecret = process.env.AUTH_SESSION_SECRET;
+    const correctPassword = process.env.PASSWORD || process.env.SERVER_ACCESS_PASSWORD;
+    const sessionSecret = process.env.AUTH_SESSION_SECRET || correctPassword || 'ij-session-secret-fallback';
 
-    if (!correctPassword || !sessionSecret) {
-      console.error("[auth-verify] PASSWORD atau AUTH_SESSION_SECRET belum diset di Environment Variables");
-      return res.status(500).json({ success: false, error: "Server belum dikonfigurasi. Hubungi admin." });
+    if (!correctPassword) {
+      console.error("[auth-verify] PASSWORD belum diset di Environment Variables");
+      return res.status(500).json({ success: false, error: "Server belum dikonfigurasi: Variable PASSWORD belum diset." });
     }
 
     if (!password || typeof password !== "string" || !safeCompare(password, correctPassword)) {
@@ -237,9 +237,10 @@ async function startServer() {
   app.get("/api/server-tokens", async (req, res) => {
     const authHeader = String(req.headers["authorization"] || "");
     const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-    const sessionSecret = process.env.AUTH_SESSION_SECRET;
+    const correctPassword = process.env.PASSWORD || process.env.SERVER_ACCESS_PASSWORD;
+    const sessionSecret = process.env.AUTH_SESSION_SECRET || correctPassword || 'ij-session-secret-fallback';
 
-    if (!sessionSecret || !verifySessionToken(token, sessionSecret)) {
+    if (!verifySessionToken(token, sessionSecret)) {
       return res.status(401).json({
         success: false,
         error: "Sesi tidak valid atau sudah kedaluwarsa. Silakan masukkan password lagi.",

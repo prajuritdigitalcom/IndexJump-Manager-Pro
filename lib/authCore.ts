@@ -56,11 +56,11 @@ export function getClientIp(req: { headers: Record<string, any>; socket?: { remo
   return req.socket?.remoteAddress || 'unknown';
 }
 
-/** Parse INDEX_JUMP_TOKENS (1 env var, banyak token dipisah baris baru). */
+/** Parse INDEX_JUMP_TOKENS, SERVER_TOKENS, atau TOKENS (dipisah baris baru atau koma). */
 export function getServerTokensFromEnv(): string[] {
-  const raw = process.env.INDEX_JUMP_TOKENS || '';
+  const raw = process.env.INDEX_JUMP_TOKENS || process.env.SERVER_TOKENS || process.env.TOKENS || '';
   return raw
-    .split('\n')
+    .split(/\r?\n|,/)
     .map((t) => t.trim())
     .filter((t) => t.length > 0);
 }

@@ -12,9 +12,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const authHeader = String(req.headers['authorization'] || '');
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  const sessionSecret = process.env.AUTH_SESSION_SECRET;
+  const correctPassword = process.env.PASSWORD || process.env.SERVER_ACCESS_PASSWORD;
+  const sessionSecret = process.env.AUTH_SESSION_SECRET || correctPassword || 'ij-session-secret-fallback';
 
-  if (!sessionSecret || !verifySessionToken(token, sessionSecret)) {
+  if (!verifySessionToken(token, sessionSecret)) {
     return res.status(401).json({
       success: false,
       error: 'Sesi tidak valid atau sudah kedaluwarsa. Silakan masukkan password lagi.',
