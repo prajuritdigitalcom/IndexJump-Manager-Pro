@@ -12,6 +12,7 @@ export interface TokenInfo {
   workerId?: string;
   health?: string;
   lastChecked?: string;
+  source?: 'local' | 'server';
 }
 
 export type URLStatus = 'pending' | 'processing' | 'success' | 'failed';

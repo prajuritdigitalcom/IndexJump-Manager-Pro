@@ -19,6 +19,7 @@ export default function App() {
     activeTab, 
     loadSettings, 
     checkSavedSession, 
+    restoreServerSession,
     optResumePrevious, 
     clearSavedSession,
     addLog,
@@ -34,13 +35,14 @@ export default function App() {
     // Initial loads
     const initApp = async () => {
       await loadSettings();
+      await restoreServerSession();
       const hasSaved = await checkSavedSession();
       if (hasSaved) {
         setShowResumeBanner(true);
       }
     };
     initApp();
-  }, [loadSettings, checkSavedSession]);
+  }, [loadSettings, checkSavedSession, restoreServerSession]);
 
   const handleResumeSession = async () => {
     try {

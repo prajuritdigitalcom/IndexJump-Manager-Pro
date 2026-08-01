@@ -129,6 +129,19 @@ interface IndexState {
   submissionError: string | null;
   setSubmissionError: (err: string | null) => void;
 
+  // Server Token Access (Password Gate)
+  isServerUnlocked: boolean;
+  isVerifyingPassword: boolean;
+  authError: string | null;
+  remainingAttempts: number | null;
+  lockedUntil: number | null;
+  serverTokens: string[];
+  useServerTokens: boolean;
+  setUseServerTokens: (v: boolean) => void;
+  verifyServerPassword: (password: string) => Promise<void>;
+  restoreServerSession: () => Promise<void>;
+  lockServerSession: () => void;
+
   // Controller Actions
   startIndexing: () => Promise<void>;
   stopIndexing: () => void;
@@ -201,28 +214,47 @@ export const useIndexStore = create<IndexState>((set, get) => ({
   clearTokens: () => set({ tokens: [], rawTokensText: '', submissionError: null }),
 
   checkAllBalances: async () => {
-    const { rawTokensText, settings, addLog } = get();
-    const tokenLines = rawTokensText
+    const { rawTokensText, serverTokens, useServerTokens, isServerUnlocked, settings, addLog } = get();
+    const localTokenLines = rawTokensText
       .split('\n')
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
 
-    if (tokenLines.length === 0) {
+    const effectiveServerTokens = (useServerTokens && isServerUnlocked) ? serverTokens : [];
+
+    const allTokenObjects: { token: string; source: 'local' | 'server' }[] = [];
+    const addedSet = new Set<string>();
+
+    for (const t of localTokenLines) {
+      if (!addedSet.has(t)) {
+        addedSet.add(t);
+        allTokenObjects.push({ token: t, source: 'local' });
+      }
+    }
+
+    for (const t of effectiveServerTokens) {
+      if (!addedSet.has(t)) {
+        addedSet.add(t);
+        allTokenObjects.push({ token: t, source: 'server' });
+      }
+    }
+
+    if (allTokenObjects.length === 0) {
       addLog('error', 'No tokens specified to check balance.');
       return;
     }
 
-    addLog('info', `Checking balance for ${tokenLines.length} token(s)...`);
+    addLog('info', `Checking balance for ${allTokenObjects.length} token(s)...`);
 
     // Map initial tokens as checking
-    const initialTokens = tokenLines.map((t) => {
-      // Keep existing token properties if available, else new
-      const existing = get().tokens.find((old) => old.token === t);
+    const initialTokens = allTokenObjects.map((item) => {
+      const existing = get().tokens.find((old) => old.token === item.token);
       return {
-        token: t,
+        token: item.token,
         balance: existing?.balance || 0,
         status: 'checking' as TokenStatus,
         health: existing?.health || 'unknown',
+        source: item.source,
       };
     });
     set({ tokens: initialTokens });
@@ -250,13 +282,14 @@ export const useIndexStore = create<IndexState>((set, get) => ({
             : (rawData.balance !== undefined ? rawData.balance : 1000);
           const status = balance <= 0 ? 'empty' : 'ready';
           
-          addLog('success', `Token [${tok.token.substring(0, 8)}...] verified. Balance: ${balance}`);
+          addLog('success', `Token [${tok.token.substring(0, 8)}...] verified (${tok.source}). Balance: ${balance}`);
           return {
             token: tok.token,
             balance,
             status: status as TokenStatus,
             health: rawData.res?.worker_health || rawData.worker_health || 'healthy',
             lastChecked: new Date().toLocaleTimeString(),
+            source: tok.source,
           };
         } catch (err: any) {
           const status = err.response?.status;
@@ -295,6 +328,7 @@ export const useIndexStore = create<IndexState>((set, get) => ({
             status: tokenStatus,
             health: 'offline',
             lastChecked: new Date().toLocaleTimeString(),
+            source: tok.source,
           };
         }
       })
@@ -400,6 +434,78 @@ export const useIndexStore = create<IndexState>((set, get) => ({
   requestTimeout: 10,
   setRequestTimeout: (v) => set({ requestTimeout: v }),
 
+  // Server Token Access (Password Gate)
+  isServerUnlocked: false,
+  isVerifyingPassword: false,
+  authError: null,
+  remainingAttempts: null,
+  lockedUntil: null,
+  serverTokens: [],
+  useServerTokens: true,
+  setUseServerTokens: (v) => set({ useServerTokens: v }),
+
+  verifyServerPassword: async (password) => {
+    set({ isVerifyingPassword: true, authError: null });
+    try {
+      const res = await axios.post('/api/auth-verify', { password });
+      const { sessionToken, expiresAt } = res.data;
+
+      sessionStorage.setItem('ij_session_token', sessionToken);
+      sessionStorage.setItem('ij_session_expires', String(expiresAt));
+
+      set({
+        isServerUnlocked: true,
+        authError: null,
+        remainingAttempts: null,
+        lockedUntil: null,
+      });
+
+      // Ambil daftar token dari server setelah sesi terbentuk
+      const tokensRes = await axios.get('/api/server-tokens', {
+        headers: { Authorization: `Bearer ${sessionToken}` },
+      });
+      const fetchedTokens = tokensRes.data.tokens || [];
+      set({ serverTokens: fetchedTokens });
+      get().addLog('success', `Server Tokens berhasil dimuat (${fetchedTokens.length} token).`);
+    } catch (err: any) {
+      const data = err.response?.data;
+      set({
+        isServerUnlocked: false,
+        authError: data?.error || 'Gagal memverifikasi password.',
+        remainingAttempts: data?.remainingAttempts ?? null,
+        lockedUntil: data?.unlockAt ?? null,
+      });
+    } finally {
+      set({ isVerifyingPassword: false });
+    }
+  },
+
+  restoreServerSession: async () => {
+    const token = sessionStorage.getItem('ij_session_token');
+    const expires = Number(sessionStorage.getItem('ij_session_expires') || 0);
+    if (!token || !expires || Date.now() >= expires) {
+      sessionStorage.removeItem('ij_session_token');
+      sessionStorage.removeItem('ij_session_expires');
+      return;
+    }
+    try {
+      const tokensRes = await axios.get('/api/server-tokens', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set({ isServerUnlocked: true, serverTokens: tokensRes.data.tokens || [] });
+    } catch {
+      sessionStorage.removeItem('ij_session_token');
+      sessionStorage.removeItem('ij_session_expires');
+    }
+  },
+
+  lockServerSession: () => {
+    sessionStorage.removeItem('ij_session_token');
+    sessionStorage.removeItem('ij_session_expires');
+    set({ isServerUnlocked: false, serverTokens: [] });
+    get().addLog('info', 'Sesi Server Tokens dikunci kembali.');
+  },
+
   // Helper checking saved session for resume state
   checkSavedSession: async () => {
     try {
@@ -432,34 +538,53 @@ export const useIndexStore = create<IndexState>((set, get) => ({
     state.addLog('info', 'Initializing Indexing Session...');
 
     // 1. Gather & parse tokens
-    let tokenLines = state.rawTokensText
+    const localTokenLines = state.rawTokensText
       .split('\n')
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
 
-    if (tokenLines.length === 0) {
-      state.addLog('error', 'API Token List is empty! Please insert at least one token.');
+    const effectiveServerTokens = (state.useServerTokens && state.isServerUnlocked) ? state.serverTokens : [];
+
+    const allTokenObjects: { token: string; source: 'local' | 'server' }[] = [];
+    const addedSet = new Set<string>();
+
+    for (const t of localTokenLines) {
+      if (!addedSet.has(t)) {
+        addedSet.add(t);
+        allTokenObjects.push({ token: t, source: 'local' });
+      }
+    }
+
+    for (const t of effectiveServerTokens) {
+      if (!addedSet.has(t)) {
+        addedSet.add(t);
+        allTokenObjects.push({ token: t, source: 'server' });
+      }
+    }
+
+    if (allTokenObjects.length === 0) {
+      state.addLog('error', 'API Token List is empty! Please insert at least one token or unlock Server Tokens.');
       return;
     }
 
     // Pre-check balance if requested
     if (state.optAutoCheckBalance) {
       await state.checkAllBalances();
-      tokenLines = get().tokens
-        .filter(t => t.status === 'ready' && t.balance > 1)
-        .map(t => t.token);
+      const readyTokens = get().tokens
+        .filter(t => t.status === 'ready' && t.balance > 1);
 
-      if (tokenLines.length === 0) {
+      if (readyTokens.length === 0) {
         state.addLog('error', 'No ready tokens with available balance > 1 found after auto-check! (1 credit is safely reserved for each token to prevent spam flags).');
         return;
       }
     } else {
       // Build immediate tokens
-      const initialTokens: TokenInfo[] = tokenLines.map((t) => ({
-        token: t,
+      const initialTokens: TokenInfo[] = allTokenObjects.map((item) => ({
+        token: item.token,
         balance: 9999, // default hypothetical high balance if unchecked
         status: 'ready',
         health: 'unknown',
+        source: item.source,
       }));
       set({ tokens: initialTokens });
     }
@@ -600,7 +725,7 @@ export const useIndexStore = create<IndexState>((set, get) => ({
         dbService.saveActiveSessionState('active_indexing_state', {
           queue: s.queue,
           urls: s.urls,
-          tokens: s.tokens,
+          tokens: s.tokens.filter(t => t.source !== 'server'),
           processedCount: s.processedCount,
           successCount: s.successCount,
           failedCount: s.failedCount,

@@ -8,6 +8,10 @@ import path from "path";
 import axios, { AxiosError } from "axios";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
+import { safeCompare, createSessionToken, verifySessionToken, getClientIp, getServerTokensFromEnv } from "./lib/authCore";
+import { getLockStatus, registerFailedAttempt, clearAttempts } from "./lib/rateLimiter";
+
+const AUTH_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 
 dotenv.config();
 
@@ -182,6 +186,67 @@ async function startServer() {
       console.error(`[Proxy Error] Forwarding failed with status ${status}:`, data);
       return res.status(status).json(data);
     }
+  });
+
+  // Server Token Password Auth Verification
+  app.post("/api/auth-verify", async (req, res) => {
+    const ip = getClientIp(req);
+    const { password } = req.body || {};
+
+    const lockStatus = getLockStatus(ip);
+    if (lockStatus.locked) {
+      return res.status(429).json({
+        success: false,
+        locked: true,
+        unlockAt: lockStatus.unlockAt,
+        error: "Terlalu banyak percobaan gagal. Coba lagi setelah masa kunci berakhir.",
+      });
+    }
+
+    const correctPassword = process.env.PASSWORD;
+    const sessionSecret = process.env.AUTH_SESSION_SECRET;
+
+    if (!correctPassword || !sessionSecret) {
+      console.error("[auth-verify] PASSWORD atau AUTH_SESSION_SECRET belum diset di Environment Variables");
+      return res.status(500).json({ success: false, error: "Server belum dikonfigurasi. Hubungi admin." });
+    }
+
+    if (!password || typeof password !== "string" || !safeCompare(password, correctPassword)) {
+      const result = registerFailedAttempt(ip);
+      return res.status(401).json({
+        success: false,
+        locked: result.locked,
+        unlockAt: result.unlockAt,
+        remainingAttempts: result.remainingAttempts,
+        error: result.locked
+          ? "Password salah. Percobaan habis — akses dikunci selama 12 jam."
+          : `Password salah. Sisa percobaan: ${result.remainingAttempts}.`,
+      });
+    }
+
+    clearAttempts(ip);
+    const sessionToken = createSessionToken(sessionSecret, AUTH_SESSION_TTL_MS);
+    return res.status(200).json({
+      success: true,
+      sessionToken,
+      expiresAt: Date.now() + AUTH_SESSION_TTL_MS,
+    });
+  });
+
+  // Get Server Tokens
+  app.get("/api/server-tokens", async (req, res) => {
+    const authHeader = String(req.headers["authorization"] || "");
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    const sessionSecret = process.env.AUTH_SESSION_SECRET;
+
+    if (!sessionSecret || !verifySessionToken(token, sessionSecret)) {
+      return res.status(401).json({
+        success: false,
+        error: "Sesi tidak valid atau sudah kedaluwarsa. Silakan masukkan password lagi.",
+      });
+    }
+
+    return res.status(200).json({ success: true, tokens: getServerTokensFromEnv() });
   });
 
   // Health check endpoint

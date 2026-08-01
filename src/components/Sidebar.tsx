@@ -15,6 +15,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import ServerAccessPanel from './ServerAccessPanel';
 
 export default function Sidebar() {
   const { activeTab, setActiveTab, isProcessing, activeWorkers } = useIndexStore();
@@ -130,6 +131,12 @@ export default function Sidebar() {
             </div>
           </div>
         )}
+
+        {/* Server Access Panel (Password Gate) */}
+        <ServerAccessPanel
+          collapsed={collapsed}
+          onRequestExpand={() => setCollapsed(false)}
+        />
 
         <div className="flex items-center justify-between">
           {!collapsed && (

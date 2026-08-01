@@ -8,24 +8,19 @@ import { useIndexStore } from '../store';
 import { 
   Key, 
   Globe, 
-  Bot, 
-  Settings2, 
   Play, 
   Square, 
   Pause, 
   Terminal, 
   Search, 
   Download, 
-  Copy, 
   Trash2, 
   Upload, 
   FileText, 
   ShieldCheck, 
-  Loader2,
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Info,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -93,6 +88,12 @@ export default function Submit() {
     setOptAutoCheckBalance,
     optAutoExport,
     setOptAutoExport,
+
+    // Server Token Auth
+    isServerUnlocked,
+    useServerTokens,
+    setUseServerTokens,
+    serverTokens,
 
     // Advanced Configurations
     workerCount,
@@ -252,17 +253,15 @@ export default function Submit() {
   };
 
   return (
-    <div className="flex-1 space-y-8 overflow-y-auto max-h-[calc(100vh-5rem)] p-8" id="submit-tab">
+    <div className="flex-1 space-y-6 overflow-y-auto max-h-[calc(100vh-5rem)] p-6 md:p-8" id="submit-tab">
       
-      {/* 2-Column Core Interface Layout */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      {/* TOP ROW: Section 1 (API Tokens) & Section 2 (URLs Intake) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         
-        {/* LEFT COLUMN: Configuration and Inputs */}
-        <div className="space-y-8">
-          
-          {/* Section 1: API Tokens Panel */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm" id="token-input-panel">
-            <div className="flex items-center justify-between mb-4">
+        {/* Section 1: API Tokens Panel */}
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm flex flex-col justify-between space-y-4" id="token-input-panel">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Key className="h-5 w-5 text-[#fe4c6f]" />
                 <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
@@ -312,34 +311,38 @@ export default function Submit() {
               className="w-full h-32 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-4 text-xs font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#fe4c6f]/50 resize-y"
             />
 
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs text-zinc-500 font-semibold font-mono">
-                  Tokens Loaded: {tokens.length}
-                </span>
-                {tokens.length > 0 && (
-                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold font-mono">
-                    Available Balance: {formatNumber(tokens.reduce((acc, t) => acc + Math.max(0, t.balance - 1), 0))} credits
+            {/* Optional Server Tokens Toggle */}
+            {isServerUnlocked && (
+              <div className="flex items-center justify-between bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200/50 dark:border-indigo-900/30 rounded-xl px-3.5 py-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 uppercase">
+                    Server Tokens
                   </span>
-                )}
+                  <span className="text-xs text-zinc-600 dark:text-zinc-300">
+                    Sertakan {serverTokens.length} token dari server
+                  </span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="toggle-use-server-tokens"
+                    checked={useServerTokens}
+                    onChange={(e) => setUseServerTokens(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-8 h-4 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:after:border-zinc-600 peer-checked:bg-indigo-600"></div>
+                </label>
               </div>
-              <button
-                id="btn-check-balance-action"
-                onClick={checkAllBalances}
-                className="px-5 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-50 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
-              >
-                <ShieldCheck className="h-4 w-4" />
-                <span>Verify & Check Balances</span>
-              </button>
-            </div>
+            )}
 
             {/* Token grid list */}
             {tokens.length > 0 && (
-              <div className="mt-4 border-t border-zinc-100 dark:border-zinc-900 pt-4 space-y-2 max-h-[140px] overflow-y-auto">
+              <div className="border-t border-zinc-100 dark:border-zinc-900 pt-3 space-y-2 max-h-[140px] overflow-y-auto">
                 <table className="w-full text-left text-xs text-zinc-500">
                   <thead>
                     <tr className="text-[10px] uppercase font-bold text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">
                       <th className="py-1">API Token</th>
+                      <th>Sumber</th>
                       <th>Balance</th>
                       <th>Available</th>
                       <th>Status</th>
@@ -351,6 +354,15 @@ export default function Submit() {
                       <tr key={idx} className="border-b border-zinc-50 dark:border-zinc-900/50">
                         <td className="py-2 font-mono font-semibold text-zinc-800 dark:text-zinc-200">
                           {tok.token.substring(0, 10)}...{tok.token.substring(tok.token.length - 4)}
+                        </td>
+                        <td>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-semibold uppercase ${
+                            tok.source === 'server'
+                              ? 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20'
+                              : 'bg-zinc-500/10 text-zinc-400'
+                          }`}>
+                            {tok.source === 'server' ? 'Server' : 'Lokal'}
+                          </span>
                         </td>
                         <td className="font-mono text-zinc-500">
                           {formatNumber(tok.balance)}
@@ -379,9 +391,32 @@ export default function Submit() {
             )}
           </div>
 
-          {/* Section 2: URLs Intake Panel */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm" id="urls-input-panel">
-            <div className="flex items-center justify-between mb-4">
+          <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs text-zinc-500 font-semibold font-mono">
+                Tokens Loaded: {tokens.length}
+              </span>
+              {tokens.length > 0 && (
+                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold font-mono">
+                  Available Balance: {formatNumber(tokens.reduce((acc, t) => acc + Math.max(0, t.balance - 1), 0))} credits
+                </span>
+              )}
+            </div>
+            <button
+              id="btn-check-balance-action"
+              onClick={checkAllBalances}
+              className="px-5 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-50 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              <span>Verify & Check Balances</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Section 2: URLs Intake Panel */}
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm flex flex-col justify-between space-y-4" id="urls-input-panel">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5 text-[#fe4c6f]" />
                 <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
@@ -444,7 +479,7 @@ export default function Submit() {
 
             {/* URL Meta Statistics */}
             {totalUrlsCount > 0 && (
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl p-3.5 border border-zinc-100 dark:border-zinc-900 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl p-3 border border-zinc-100 dark:border-zinc-900 text-xs">
                 <div>
                   <span className="text-zinc-400 block font-medium">Total Input</span>
                   <span className="font-bold text-zinc-800 dark:text-zinc-200 font-mono">{formatNumber(totalUrlsCount)}</span>
@@ -467,343 +502,169 @@ export default function Submit() {
                 </div>
               </div>
             )}
+
+            {/* Submission Error Alert */}
+            {submissionError && (
+              <div className="p-3 rounded-xl border border-red-200 bg-red-50 text-red-800 text-xs flex items-start gap-2.5 shadow-sm">
+                <AlertTriangle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Peringatan: Token Tidak Cukup</p>
+                  <p className="mt-0.5 leading-relaxed">{submissionError}</p>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Section 3, 4 & 5: Simplified Bot & Anti-Spam Safety Engine */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm space-y-6" id="simplified-safety-engine">
-            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 pb-4">
-              <div className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-[#fe4c6f]" />
-                <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                  Bot & Safety Engine
-                </h3>
-              </div>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wider animate-pulse">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                <span>Safe Mode Active</span>
-              </div>
+          <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs text-zinc-500 font-semibold font-mono">
+                URLs Ready: {uniqueUrlsCount}
+              </span>
+              <span className="text-[11px] text-zinc-400 font-mono">
+                GoogleBot / Organic Speed Mode
+              </span>
             </div>
 
-            {/* Bot Selection */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 block">
-                Bot Agent Profile
-              </label>
-              <select
-                id="select-bot-type"
-                value={selectedBot}
-                onChange={(e) => setSelectedBot(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#fe4c6f]/50 font-medium font-mono"
-              >
-                <option value="GoogleBot">GoogleBot (Default Optimized)</option>
-                <option value="OpenAIBot">OpenAIBot (AI Indexing Core)</option>
-                <option value="BingBot">BingBot (Microsoft Network)</option>
-              </select>
-            </div>
-
-            {/* Automated Safety Rules List */}
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl p-4 border border-zinc-100 dark:border-zinc-900 space-y-3.5 text-xs">
-              <div className="flex items-start gap-2.5">
-                <div className="mt-0.5 p-1 rounded bg-[#fe4c6f]/10 text-[#fe4c6f] shrink-0">
-                  <Key className="h-3.5 w-3.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-zinc-800 dark:text-zinc-100">Token Safety Reserve (Sisa 1)</h4>
-                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5 leading-relaxed">
-                    Tokens are automatically rotated before they run out. Once a token has <strong>1 credit</strong> remaining, the system shifts to the next token to avoid complete depletion or spam flags.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <div className="mt-0.5 p-1 rounded bg-[#fe4c6f]/10 text-[#fe4c6f] shrink-0">
-                  <Globe className="h-3.5 w-3.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-zinc-800 dark:text-zinc-100">Natural Flow Simulation</h4>
-                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5 leading-relaxed">
-                    Operates with a single concurrent thread and mimics random organic user submissions with dynamic timeouts and simulated delays (randomized between 100ms–1000ms).
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <div className="mt-0.5 p-1 rounded bg-[#fe4c6f]/10 text-[#fe4c6f] shrink-0">
-                  <CheckCircle className="h-3.5 w-3.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-zinc-800 dark:text-zinc-100">Smart URL Filtering</h4>
-                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5 leading-relaxed">
-                    The engine shuffles your batch automatically to break footprint patterns and filters out duplicate or invalid links, preserving your precious token quotas.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Collapsible Advanced Settings for power users */}
-            <div className="pt-2 border-t border-zinc-100 dark:border-zinc-900">
-              <button
-                id="btn-toggle-advanced-configs"
-                type="button"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="w-full py-2.5 px-4 text-xs font-bold text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 flex items-center justify-between transition-all rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900 cursor-pointer border border-dashed border-zinc-200 dark:border-zinc-800"
-              >
-                <span>{showAdvanced ? "Hide Custom Advanced Configurations" : "Show Custom Advanced Configurations"}</span>
-                <ChevronRight className={`h-4 w-4 transition-transform ${showAdvanced ? "rotate-90" : ""}`} />
-              </button>
-
-              {showAdvanced && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-4 space-y-6 pt-4 border-t border-zinc-100 dark:border-zinc-900/50"
-                >
-                  {/* Advanced settings section */}
-                  <div className="space-y-4">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Fine-Tune Submission Rules</span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {[
-                        { label: 'Remove Duplicate URL', value: optRemoveDuplicates, setter: setOptRemoveDuplicates },
-                        { label: 'Shuffle URL List', value: optShuffleUrls, setter: setOptShuffleUrls },
-                        { label: 'Skip Invalid URLs', value: optSkipInvalid, setter: setOptSkipInvalid },
-                        { label: 'Retry Failed Requests', value: optRetryFailed, setter: setOptRetryFailed },
-                        { label: 'Continue Automatically', value: optContinueAuto, setter: setOptContinueAuto },
-                        { label: 'Save Active Sessions', value: optSaveSession, setter: setOptSaveSession },
-                        { label: 'Enable Parallel Workers', value: optEnableParallel, setter: setOptEnableParallel },
-                        { label: 'Auto Balance Verify', value: optAutoCheckBalance, setter: setOptAutoCheckBalance },
-                        { label: 'Auto Export Results', value: optAutoExport, setter: setOptAutoExport },
-                      ].map((opt, i) => (
-                        <label 
-                          key={i} 
-                          className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-zinc-50 cursor-pointer select-none"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={opt.value}
-                            onChange={(e) => opt.setter(e.target.checked)}
-                            className="mt-0.5 rounded border-zinc-300 text-[#fe4c6f] focus:ring-[#fe4c6f]"
-                          />
-                          <span>{opt.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 text-xs pt-2 border-t border-zinc-100 dark:border-zinc-900/30">
-                    <div className="space-y-1.5">
-                      <label className="font-semibold text-zinc-500 dark:text-zinc-400">Worker Count</label>
-                      <select
-                        id="select-worker-count"
-                        value={workerCount}
-                        onChange={(e) => setWorkerCount(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
-                      >
-                        <option value={1}>1 Worker (Standard)</option>
-                        <option value={2}>2 Workers</option>
-                        <option value={4}>4 Workers</option>
-                        <option value={8}>8 Workers</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="font-semibold text-zinc-500 dark:text-zinc-400">Retry Count</label>
-                      <select
-                        id="select-retry-count"
-                        value={retryCount}
-                        onChange={(e) => setRetryCount(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
-                      >
-                        <option value={1}>1 Retry</option>
-                        <option value={2}>2 Retries</option>
-                        <option value={3}>3 Retries</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="font-semibold text-zinc-500 dark:text-zinc-400">Retry Delay</label>
-                      <select
-                        id="select-retry-delay"
-                        value={retryDelay}
-                        onChange={(e) => setRetryDelay(e.target.value as any)}
-                        className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
-                      >
-                        <option value="random">Random Delay (100ms-1000ms)</option>
-                        <option value="100ms">100ms</option>
-                        <option value="500ms">500ms</option>
-                        <option value="1000ms">1000ms (Safe Anti-Limit)</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="font-semibold text-zinc-500 dark:text-zinc-400">Request Timeout</label>
-                      <select
-                        id="select-request-timeout"
-                        value={requestTimeout}
-                        onChange={(e) => setRequestTimeout(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 font-medium text-zinc-800 dark:text-zinc-100"
-                      >
-                        <option value={5}>5 Seconds</option>
-                        <option value={10}>10 Seconds (Standard)</option>
-                        <option value={30}>30 Seconds</option>
-                      </select>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </div>
-
-          {/* Submission Error Alert */}
-          {submissionError && (
-            <div className="p-4 mb-4 rounded-xl border border-red-200 bg-red-50 text-red-800 text-xs flex items-start gap-2.5 shadow-sm">
-              <AlertTriangle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold">Peringatan: Token Tidak Cukup</p>
-                <p className="mt-1 leading-relaxed">{submissionError}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Trigger action controls */}
-          <div className="flex gap-4 p-1">
             {!isProcessing ? (
               <button
                 id="btn-start-indexing"
                 onClick={startIndexing}
-                className="flex-1 py-4 px-6 rounded-2xl bg-gradient-to-r from-[#fe4c6f] to-[#e83b61] hover:from-[#e83b61] hover:to-[#fe4c6f] text-white font-bold text-sm shadow-lg shadow-[#fe4c6f]/20 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
+                className="px-5 py-2.5 rounded-xl bg-[#fe4c6f] hover:bg-[#e83b61] text-white text-xs font-bold shadow-md shadow-[#fe4c6f]/20 transition-all cursor-pointer flex items-center gap-1.5"
               >
-                <Play className="h-4.5 w-4.5" />
+                <Play className="h-4 w-4" />
                 <span>START INDEXING QUEUE</span>
               </button>
             ) : (
-              <>
+              <div className="flex items-center gap-2">
                 <button
                   id="btn-stop-indexing"
                   onClick={stopIndexing}
-                  className="flex-1 py-4 px-6 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  <Square className="h-4.5 w-4.5" />
-                  <span>STOP PROCESS</span>
+                  <Square className="h-3.5 w-3.5" />
+                  <span>STOP</span>
                 </button>
-
                 {isPaused ? (
                   <button
                     id="btn-resume-indexing"
                     onClick={resumeIndexing}
-                    className="px-6 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5"
                   >
-                    <Play className="h-4.5 w-4.5" />
+                    <Play className="h-3.5 w-3.5" />
                     <span>Resume</span>
                   </button>
                 ) : (
                   <button
                     id="btn-pause-indexing"
                     onClick={pauseIndexing}
-                    className="px-6 py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5"
                   >
-                    <Pause className="h-4.5 w-4.5" />
+                    <Pause className="h-3.5 w-3.5" />
                     <span>Pause</span>
                   </button>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Realtime Engine Logs & Live Table */}
-        <div className="space-y-8">
+      </div>
+
+      {/* Section: Queue Realtime Progress */}
+      {isProcessing && (
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm" id="live-progress-bar-container">
+          <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2">
+            <span>INDEXING CORE QUEUE PROGRESS</span>
+            <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">
+              {processedCount} / {totalUrlsToProcess} ({Math.round((processedCount / totalUrlsToProcess) * 100)}%)
+            </span>
+          </div>
           
-          {/* Section: Queue Realtime Progress */}
-          {isProcessing && (
-            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm" id="live-progress-bar-container">
-              <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2">
-                <span>INDEXING CORE QUEUE PROGRESS</span>
-                <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">
-                  {processedCount} / {totalUrlsToProcess} ({Math.round((processedCount / totalUrlsToProcess) * 100)}%)
-                </span>
-              </div>
-              
-              {/* Massive active Progress Bar */}
-              <div className="w-full h-3 bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden mb-4 border border-zinc-200 dark:border-zinc-800">
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-[#fe4c6f] to-[#e83b61]"
-                  initial={{ width: '0%' }}
-                  animate={{ width: `${(processedCount / totalUrlsToProcess) * 100}%` }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-
-              {/* Dynamic stats line */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
-                <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
-                  <span className="text-zinc-400 text-[10px] block font-medium">SUCCESS</span>
-                  <span className="font-bold text-emerald-500 font-mono">{successCount}</span>
-                </div>
-                <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
-                  <span className="text-zinc-400 text-[10px] block font-medium">FAILED</span>
-                  <span className="font-bold text-rose-500 font-mono">{failedCount}</span>
-                </div>
-                <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
-                  <span className="text-zinc-400 text-[10px] block font-medium">SPEED</span>
-                  <span className="font-bold text-[#fe4c6f] font-mono">{speedUrlPerMinute} URLs/m</span>
-                </div>
-                <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
-                  <span className="text-zinc-400 text-[10px] block font-medium">REMAINING</span>
-                  <span className="font-bold text-sky-500 font-mono">
-                    {Math.ceil((totalUrlsToProcess - processedCount))} items
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Section: Live Terminal Log Monitor */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-950 p-6 shadow-sm flex flex-col h-[320px] justify-between relative overflow-hidden" id="live-terminal-panel">
-            <div className="flex items-center justify-between mb-4 border-b border-zinc-900 pb-3">
-              <div className="flex items-center gap-2">
-                <Terminal className="h-4.5 w-4.5 text-[#fe4c6f] animate-pulse" />
-                <span className="text-xs font-bold font-mono text-zinc-300">LIVE ENGINE TERMINAL LOG</span>
-              </div>
-              <button
-                id="btn-clear-logs"
-                onClick={clearLogs}
-                className="text-[10px] text-zinc-500 hover:text-white font-mono cursor-pointer"
-              >
-                CLEAR LOGS
-              </button>
-            </div>
-
-            {/* Scrollable text container */}
-            <div 
-              ref={terminalScrollRef}
-              className="flex-1 overflow-y-auto space-y-1.5 font-mono text-[10px] leading-relaxed pr-1 select-text"
-            >
-              {logs.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-zinc-600">
-                  <span>SYSTEM ONLINE. STANDBY FOR QUEUE TRIGGER...</span>
-                </div>
-              ) : (
-                logs.map((log) => {
-                  let colorClass = 'text-zinc-400';
-                  if (log.level === 'success') colorClass = 'text-emerald-400 font-semibold';
-                  if (log.level === 'warn') colorClass = 'text-amber-400 font-semibold';
-                  if (log.level === 'error') colorClass = 'text-rose-400 font-semibold';
-                  if (log.level === 'info') colorClass = 'text-cyan-400';
-
-                  return (
-                    <div key={log.id} className="flex gap-2">
-                      <span className="text-zinc-600 font-light shrink-0">[{log.timestamp}]</span>
-                      <span className={colorClass}>{log.message}</span>
-                    </div>
-                  );
-                })
-              )}
-            </div>
+          {/* Active Progress Bar */}
+          <div className="w-full h-3 bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden mb-4 border border-zinc-200 dark:border-zinc-800">
+            <motion.div 
+              className="h-full bg-gradient-to-r from-[#fe4c6f] to-[#e83b61]"
+              initial={{ width: '0%' }}
+              animate={{ width: `${(processedCount / totalUrlsToProcess) * 100}%` }}
+              transition={{ duration: 0.3 }}
+            />
           </div>
 
-          {/* Section: Detailed Submission Results Table */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm space-y-4" id="results-table-panel">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Dynamic stats line */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
+              <span className="text-zinc-400 text-[10px] block font-medium">SUCCESS</span>
+              <span className="font-bold text-emerald-500 font-mono">{successCount}</span>
+            </div>
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
+              <span className="text-zinc-400 text-[10px] block font-medium">FAILED</span>
+              <span className="font-bold text-rose-500 font-mono">{failedCount}</span>
+            </div>
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
+              <span className="text-zinc-400 text-[10px] block font-medium">SPEED</span>
+              <span className="font-bold text-[#fe4c6f] font-mono">{speedUrlPerMinute} URLs/m</span>
+            </div>
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
+              <span className="text-zinc-400 text-[10px] block font-medium">REMAINING</span>
+              <span className="font-bold text-sky-500 font-mono">
+                {Math.ceil((totalUrlsToProcess - processedCount))} items
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* BOTTOM ROW: Live Terminal Log & Real-Time Submissions Table */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        
+        {/* Section: Live Terminal Log Monitor */}
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-950 p-6 shadow-sm flex flex-col justify-between h-[420px] overflow-hidden" id="live-terminal-panel">
+          <div className="flex items-center justify-between mb-4 border-b border-zinc-900 pb-3">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4.5 w-4.5 text-[#fe4c6f] animate-pulse" />
+              <span className="text-xs font-bold font-mono text-zinc-300">LIVE ENGINE TERMINAL LOG</span>
+            </div>
+            <button
+              id="btn-clear-logs"
+              onClick={clearLogs}
+              className="text-[10px] text-zinc-500 hover:text-white font-mono cursor-pointer"
+            >
+              CLEAR LOGS
+            </button>
+          </div>
+
+          {/* Scrollable text container */}
+          <div 
+            ref={terminalScrollRef}
+            className="flex-1 overflow-y-auto space-y-1.5 font-mono text-[10px] leading-relaxed pr-1 select-text"
+          >
+            {logs.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-zinc-600">
+                <span>SYSTEM ONLINE. STANDBY FOR QUEUE TRIGGER...</span>
+              </div>
+            ) : (
+              logs.map((log) => {
+                let colorClass = 'text-zinc-400';
+                if (log.level === 'success') colorClass = 'text-emerald-400 font-semibold';
+                if (log.level === 'warn') colorClass = 'text-amber-400 font-semibold';
+                if (log.level === 'error') colorClass = 'text-rose-400 font-semibold';
+                if (log.level === 'info') colorClass = 'text-cyan-400';
+
+                return (
+                  <div key={log.id} className="flex gap-2">
+                    <span className="text-zinc-600 font-light shrink-0">[{log.timestamp}]</span>
+                    <span className={colorClass}>{log.message}</span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Section: Detailed Submission Results Table */}
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm flex flex-col justify-between h-[420px] overflow-hidden space-y-3" id="results-table-panel">
+          <div className="space-y-3 flex-1 flex flex-col overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <Globe className="h-4.5 w-4.5 text-[#fe4c6f]" />
                 <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
@@ -852,12 +713,12 @@ export default function Submit() {
                 placeholder="Search processed URLs, tokens, or responses..."
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-[#fe4c6f]"
+                className="w-full pl-10 pr-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-[#fe4c6f]"
               />
             </div>
 
             {urls.length === 0 ? (
-              <div className="text-center py-12 text-zinc-400 border border-dashed border-zinc-100 dark:border-zinc-900 rounded-xl">
+              <div className="flex-1 flex flex-col items-center justify-center text-center py-6 text-zinc-400 border border-dashed border-zinc-100 dark:border-zinc-900 rounded-xl">
                 <Globe className="h-8 w-8 text-zinc-300 dark:text-zinc-700 mx-auto mb-2" />
                 <span className="text-xs font-semibold">Ready to process queue.</span>
                 <p className="text-[10px] text-zinc-400 max-w-xs mx-auto mt-1">
@@ -865,8 +726,8 @@ export default function Submit() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="overflow-x-auto border border-zinc-100 dark:border-zinc-900 rounded-xl">
+              <div className="flex-1 flex flex-col overflow-hidden space-y-2">
+                <div className="flex-1 overflow-auto border border-zinc-100 dark:border-zinc-900 rounded-xl">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-900 text-zinc-500 text-[10px] uppercase font-bold select-none">
@@ -914,29 +775,29 @@ export default function Submit() {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between text-xs pt-2">
-                    <span className="text-zinc-500">
-                      Showing {paginatedUrls.length} of {sortedUrls.length} items
+                  <div className="flex items-center justify-between text-xs pt-1 shrink-0">
+                    <span className="text-zinc-500 text-[11px]">
+                      {paginatedUrls.length} of {sortedUrls.length} items
                     </span>
                     <div className="flex items-center gap-1">
                       <button
                         id="btn-pagination-prev"
                         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="p-1.5 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-50 cursor-pointer"
+                        className="p-1 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-50 cursor-pointer"
                       >
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft className="h-3.5 w-3.5" />
                       </button>
-                      <span className="px-3 font-mono font-semibold text-zinc-700 dark:text-zinc-300">
+                      <span className="px-2 font-mono font-semibold text-[11px] text-zinc-700 dark:text-zinc-300">
                         {currentPage} / {totalPages}
                       </span>
                       <button
                         id="btn-pagination-next"
                         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="p-1.5 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-50 cursor-pointer"
+                        className="p-1 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-50 cursor-pointer"
                       >
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
@@ -944,7 +805,6 @@ export default function Submit() {
               </div>
             )}
           </div>
-
         </div>
 
       </div>
