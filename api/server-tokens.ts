@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { verifySessionToken, getServerTokensFromEnv } from '../lib/authCore';
+import { verifySessionToken, getServerTokensFromEnv } from '../lib/authCore.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {

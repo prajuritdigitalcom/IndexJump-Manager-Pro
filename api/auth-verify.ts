@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { safeCompare, createSessionToken, getClientIp } from '../lib/authCore';
-import { getLockStatus, registerFailedAttempt, clearAttempts } from '../lib/rateLimiter';
+import { safeCompare, createSessionToken, getClientIp } from '../lib/authCore.js';
+import { getLockStatus, registerFailedAttempt, clearAttempts } from '../lib/rateLimiter.js';
 
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // sesi login berlaku 8 jam (independen dari lockout 12 jam)
 
