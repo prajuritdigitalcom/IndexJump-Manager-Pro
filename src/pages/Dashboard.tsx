@@ -74,49 +74,49 @@ export default function Dashboard() {
   const statCards = [
     {
       id: 'stat-tokens',
-      title: 'Total API Tokens',
+      title: 'Total Token API',
       value: formatNumber(totalTokensCount),
-      sub: `${tokens.filter(t => t.status === 'ready').length} Ready • ${tokens.filter(t => t.status === 'invalid').length} Invalid`,
+      sub: `${tokens.filter(t => t.status === 'ready').length} Siap • ${tokens.filter(t => t.status === 'invalid').length} Tidak Valid`,
       icon: Key,
       color: 'from-pink-500/10 to-rose-500/10 border-rose-500/20 text-[#fe4c6f]'
     },
     {
       id: 'stat-balance',
-      title: 'Available Balance',
+      title: 'Saldo Tersedia',
       value: formatNumber(availableBalance),
-      sub: '1 credit per token is safely reserved',
+      sub: '1 kredit per token dicanangkan dengan aman',
       icon: Coins,
       color: 'from-amber-500/10 to-yellow-500/10 border-yellow-500/20 text-amber-500'
     },
     {
       id: 'stat-submitted',
-      title: 'Live Submitted URLs',
+      title: 'URL Dikirim Saat Ini',
       value: formatNumber(urls.length),
-      sub: `${processedCount} / ${totalUrlsToProcess} handled in current queue`,
+      sub: `${processedCount} / ${totalUrlsToProcess} diproses dalam antrean saat ini`,
       icon: Send,
       color: 'from-[#3b82f6]/10 to-indigo-500/10 border-[#3b82f6]/20 text-[#3b82f6]'
     },
     {
       id: 'stat-success',
-      title: 'Success Submissions',
+      title: 'Submisi Berhasil',
       value: formatNumber(successCount),
-      sub: urls.length > 0 ? `${Math.round((successCount / Math.max(1, processedCount)) * 100)}% Conversion rate` : 'No active sessions',
+      sub: urls.length > 0 ? `${Math.round((successCount / Math.max(1, processedCount)) * 100)}% Tingkat keberhasilan` : 'Belum ada sesi aktif',
       icon: CheckCircle2,
       color: 'from-emerald-500/10 to-teal-500/10 border-emerald-500/20 text-emerald-500'
     },
     {
       id: 'stat-failed',
-      title: 'Failed Attempts',
+      title: 'Upaya Gagal',
       value: formatNumber(failedCount),
-      sub: 'Automated retries triggered',
+      sub: 'Percobaan ulang otomatis dipicu',
       icon: XCircle,
       color: 'from-rose-500/10 to-red-500/10 border-red-500/20 text-rose-500'
     },
     {
       id: 'stat-remaining',
-      title: 'Time Remaining',
+      title: 'Sisa Waktu',
       value: formatTimer(isProcessing ? estimatedTimeRemaining : 0),
-      sub: `Speed: ${speedUrlPerMinute} URLs/Min`,
+      sub: `Kecepatan: ${speedUrlPerMinute} URL/Menit`,
       icon: Clock,
       color: 'from-sky-500/10 to-blue-500/10 border-blue-500/20 text-sky-500'
     }
@@ -133,13 +133,13 @@ export default function Dashboard() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-500/30 bg-pink-500/10 text-xs font-semibold text-[#fe4c6f]">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>SaaS Platform Control Panel</span>
+              <span>Panel Kontrol Platform SaaS</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-              Welcome to IndexJump Manager Pro
+              Selamat Datang di IndexJump Manager Pro
             </h2>
             <p className="text-zinc-400 max-w-xl text-sm leading-relaxed">
-              Automate high-velocity backlink and URL indexation submissions via distributed multi-token parallel workers natively. Perfect for large-scale SEO workflows.
+              Otomatiskan pengiriman indeks URL dan backlink berkecepatan tinggi melalui worker paralel multi-token terdistribusi. Sangat cocok untuk alur kerja SEO skala besar.
             </p>
           </div>
           <button
@@ -147,7 +147,7 @@ export default function Dashboard() {
             onClick={() => setActiveTab('submit')}
             className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#fe4c6f] to-[#e83b61] hover:from-[#e83b61] hover:to-[#fe4c6f] text-white font-semibold text-sm transition-all duration-300 shadow-lg shadow-[#fe4c6f]/20 cursor-pointer flex items-center gap-2"
           >
-            <span>Launch Submission Queue</span>
+            <span>Mulai Antrean Submit</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>
@@ -195,7 +195,7 @@ export default function Dashboard() {
         <div className="lg:col-span-1 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 flex flex-col items-center justify-center shadow-sm min-h-[380px]" id="dashboard-progress-ring-card">
           <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 self-start mb-6 flex items-center gap-2">
             <Zap className="h-4 w-4 text-[#fe4c6f]" />
-            <span>Active Progress Dial</span>
+            <span>Progres Antrean Aktif</span>
           </h3>
 
           <div className="relative h-44 w-44 flex items-center justify-center">
@@ -230,26 +230,26 @@ export default function Dashboard() {
                 {progressPercent}%
               </span>
               <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mt-1">
-                Completed
+                Selesai
               </p>
             </div>
           </div>
 
           <div className="w-full mt-6 space-y-3.5 border-t border-zinc-100 dark:border-zinc-900 pt-5">
             <div className="flex justify-between text-xs">
-              <span className="text-zinc-500 font-medium">Job Status</span>
+              <span className="text-zinc-500 font-medium">Status Pekerjaan</span>
               <span className={`font-semibold ${isProcessing ? 'text-emerald-500' : 'text-zinc-400'}`}>
-                {isProcessing ? 'Processing Queue' : 'Idle / Standby'}
+                {isProcessing ? 'Memproses Antrean' : 'Siap / Standby'}
               </span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-zinc-500 font-medium">Active Workers</span>
+              <span className="text-zinc-500 font-medium">Worker Aktif</span>
               <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
-                {isProcessing ? tokens.filter(t => t.status === 'ready').length : 0} Allocated
+                {isProcessing ? tokens.filter(t => t.status === 'ready').length : 0} Dialokasikan
               </span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-zinc-500 font-medium">URLs Processed</span>
+              <span className="text-zinc-500 font-medium">URL Diproses</span>
               <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
                 {processedCount} / {totalUrlsToProcess}
               </span>
@@ -263,14 +263,14 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                 <Database className="h-4 w-4 text-[#fe4c6f]" />
-                <span>Recent System Runs</span>
+                <span>Riwayat Sesi Terakhir</span>
               </h3>
               <button
                 id="dashboard-btn-all-history"
                 onClick={() => setActiveTab('history')}
                 className="text-xs text-[#fe4c6f] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
               >
-                <span>View All History</span>
+                <span>Lihat Semua Riwayat</span>
                 <ArrowRight className="h-3 w-3" />
               </button>
             </div>
@@ -278,9 +278,9 @@ export default function Dashboard() {
             {historySessions.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
                 <BarChart3 className="h-10 w-10 text-zinc-300 dark:text-zinc-700 mb-2" />
-                <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">No session runs detected</span>
+                <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">Belum ada riwayat sesi pengiriman</span>
                 <p className="text-xs text-zinc-400 dark:text-zinc-500 max-w-xs mt-1">
-                  Once you start submissions in the "Submit Queue" tab, your complete session logs will appear here.
+                  Setelah Anda memulai pengiriman di tab "Antrean Submit", log sesi lengkap Anda akan muncul di sini.
                 </p>
               </div>
             ) : (
@@ -296,7 +296,7 @@ export default function Dashboard() {
                       </span>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
-                          {session.totalUrls} URLs Submitting
+                          {session.totalUrls} URL Dikirim
                         </span>
                         <span className="text-xs px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
                           {session.bot}
@@ -306,10 +306,10 @@ export default function Dashboard() {
                     <div className="flex items-center gap-6">
                       <div className="text-right">
                         <span className="text-xs text-emerald-500 font-semibold block">
-                          {session.successCount} Success
+                          {session.successCount} Berhasil
                         </span>
                         <span className="text-xs text-rose-500 font-semibold block">
-                          {session.failedCount} Failed
+                          {session.failedCount} Gagal
                         </span>
                       </div>
                       <span className={`text-xs px-2.5 py-1 rounded-full font-semibold uppercase font-mono ${
@@ -317,7 +317,7 @@ export default function Dashboard() {
                           ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
                           : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
                       }`}>
-                        {session.status}
+                        {session.status === 'completed' ? 'Selesai' : session.status}
                       </span>
                     </div>
                   </div>
@@ -329,7 +329,7 @@ export default function Dashboard() {
           <div className="border-t border-zinc-100 dark:border-zinc-900 pt-4 mt-6 text-xs text-zinc-500 flex items-center gap-2 justify-between">
             <span className="flex items-center gap-1">
               <Activity className="h-3.5 w-3.5 text-pink-500" />
-              Aggregate: {formatNumber(totalSubmittedHistorical)} Submitted • {formatNumber(totalSuccessHistorical)} Indexed
+              Total Akumulasi: {formatNumber(totalSubmittedHistorical)} Dikirim • {formatNumber(totalSuccessHistorical)} Terindeks
             </span>
             <span className="font-mono text-[10px]">
               V1.0

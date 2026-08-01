@@ -265,7 +265,7 @@ export default function Submit() {
               <div className="flex items-center gap-2">
                 <Key className="h-5 w-5 text-[#fe4c6f]" />
                 <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                  Section 1: API Tokens
+                  Bagian 1: Token API
                 </h3>
               </div>
               <div className="flex items-center gap-2">
@@ -280,17 +280,17 @@ export default function Submit() {
                   id="btn-import-tokens-txt"
                   onClick={() => tokenFileRef.current?.click()}
                   className="text-xs bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer"
-                  title="Import from text file (.txt)"
+                  title="Impor dari file teks (.txt)"
                 >
                   <Upload className="h-3.5 w-3.5" />
-                  <span>Import TXT</span>
+                  <span>Impor TXT</span>
                 </button>
                 <button
                   id="btn-paste-tokens"
                   onClick={pasteTokens}
                   className="text-xs bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>Paste</span>
+                  <span>Tempel</span>
                 </button>
                 <button
                   id="btn-clear-tokens"
@@ -298,7 +298,7 @@ export default function Submit() {
                   className="text-xs text-rose-500 hover:bg-rose-500/10 px-2.5 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  <span>Clear</span>
+                  <span>Hapus</span>
                 </button>
               </div>
             </div>
@@ -307,7 +307,7 @@ export default function Submit() {
               id="token-textarea-input"
               value={rawTokensText}
               onChange={(e) => setRawTokensText(e.target.value)}
-              placeholder="Enter your IndexJump API Tokens here (one token per line)...&#10;e.g.&#10;mock_token_1_500&#10;mock_token_2_1200"
+              placeholder="Masukkan Token API IndexJump Anda di sini (satu token per baris)...&#10;Contoh:&#10;mock_token_1_500&#10;mock_token_2_1200"
               className="w-full h-32 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-4 text-xs font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#fe4c6f]/50 resize-y"
             />
 
@@ -316,7 +316,7 @@ export default function Submit() {
               <div className="flex items-center justify-between bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200/50 dark:border-indigo-900/30 rounded-xl px-3.5 py-2.5">
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 uppercase">
-                    Server Tokens
+                    Token Server
                   </span>
                   <span className="text-xs text-zinc-600 dark:text-zinc-300">
                     Sertakan {serverTokens.length} token dari server
@@ -341,12 +341,12 @@ export default function Submit() {
                 <table className="w-full text-left text-xs text-zinc-500">
                   <thead>
                     <tr className="text-[10px] uppercase font-bold text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">
-                      <th className="py-1">API Token</th>
+                      <th className="py-1">Token API</th>
                       <th>Sumber</th>
-                      <th>Balance</th>
-                      <th>Available</th>
+                      <th>Total Saldo</th>
+                      <th>Saldo Tersedia</th>
                       <th>Status</th>
-                      <th>Health</th>
+                      <th>Kesehatan</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -377,11 +377,11 @@ export default function Submit() {
                             tok.status === 'empty' ? 'bg-amber-500/10 text-amber-500' :
                             'bg-rose-500/10 text-rose-500'
                           }`}>
-                            {tok.status}
+                            {tok.status === 'ready' ? 'Siap' : tok.status === 'checking' ? 'Mengecek' : tok.status === 'empty' ? 'Kosong' : 'Tidak Valid'}
                           </span>
                         </td>
                         <td className="text-[10px] text-zinc-400 font-medium">
-                          {tok.health || 'healthy'}
+                          {tok.health === 'healthy' || !tok.health ? 'Sehat' : tok.health}
                         </td>
                       </tr>
                     ))}
@@ -394,11 +394,11 @@ export default function Submit() {
           <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-xs text-zinc-500 font-semibold font-mono">
-                Tokens Loaded: {tokens.length}
+                Token Termuat: {tokens.length}
               </span>
               {tokens.length > 0 && (
                 <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold font-mono">
-                  Available Balance: {formatNumber(tokens.reduce((acc, t) => acc + Math.max(0, t.balance - 1), 0))} credits
+                  Saldo Tersedia: {formatNumber(tokens.reduce((acc, t) => acc + Math.max(0, t.balance - 1), 0))} kredit
                 </span>
               )}
             </div>
@@ -408,7 +408,7 @@ export default function Submit() {
               className="px-5 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-50 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
             >
               <ShieldCheck className="h-4 w-4" />
-              <span>Verify & Check Balances</span>
+              <span>Verifikasi & Cek Saldo</span>
             </button>
           </div>
         </div>
@@ -420,7 +420,7 @@ export default function Submit() {
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5 text-[#fe4c6f]" />
                 <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                  Section 2: URLs Intake
+                  Bagian 2: Input URL Target
                 </h3>
               </div>
               <div className="flex items-center gap-2">
@@ -446,7 +446,7 @@ export default function Submit() {
                   id="btn-import-urls-csv"
                   onClick={() => urlFileRef.current?.click()}
                   className="text-xs bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer"
-                  title="Upload CSV containing links"
+                  title="Unggah CSV berisi link"
                 >
                   <Upload className="h-3.5 w-3.5" />
                   <span>CSV</span>
@@ -456,7 +456,7 @@ export default function Submit() {
                   onClick={pasteUrls}
                   className="text-xs bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>Paste</span>
+                  <span>Tempel</span>
                 </button>
                 <button
                   id="btn-clear-urls"
@@ -464,7 +464,7 @@ export default function Submit() {
                   className="text-xs text-rose-500 hover:bg-rose-500/10 px-2.5 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  <span>Clear</span>
+                  <span>Hapus</span>
                 </button>
               </div>
             </div>
@@ -473,7 +473,7 @@ export default function Submit() {
               id="urls-textarea-input"
               value={rawUrlsText}
               onChange={(e) => setRawUrlsText(e.target.value)}
-              placeholder="Enter your target backlink URLs here (one URL per line)...&#10;e.g.&#10;https://example.com/blog/seo-guide&#10;https://example.com/products/software"
+              placeholder="Masukkan URL backlink target Anda di sini (satu URL per baris)...&#10;Contoh:&#10;https://example.com/blog/panduan-seo&#10;https://example.com/produk/software"
               className="w-full h-32 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-4 text-xs font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#fe4c6f]/50 resize-y"
             />
 
@@ -485,15 +485,15 @@ export default function Submit() {
                   <span className="font-bold text-zinc-800 dark:text-zinc-200 font-mono">{formatNumber(totalUrlsCount)}</span>
                 </div>
                 <div>
-                  <span className="text-zinc-400 block font-medium">Unique URLs</span>
+                  <span className="text-zinc-400 block font-medium">URL Unik</span>
                   <span className="font-bold text-[#fe4c6f] font-mono">{formatNumber(uniqueUrlsCount)}</span>
                 </div>
                 <div>
-                  <span className="text-zinc-400 block font-medium">Duplicates</span>
+                  <span className="text-zinc-400 block font-medium">Duplikat</span>
                   <span className="font-bold text-amber-500 font-mono">{formatNumber(duplicateCount)}</span>
                 </div>
                 <div>
-                  <span className="text-zinc-400 block font-medium">Valid / Invalid</span>
+                  <span className="text-zinc-400 block font-medium">Valid / Tidak Valid</span>
                   <span className="font-bold text-zinc-800 dark:text-zinc-200 font-mono">
                     <span className="text-emerald-500">{formatNumber(validUrlsCount)}</span>
                     <span className="text-zinc-300 dark:text-zinc-700 mx-1">/</span>
@@ -518,10 +518,10 @@ export default function Submit() {
           <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 flex items-center justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-xs text-zinc-500 font-semibold font-mono">
-                URLs Ready: {uniqueUrlsCount}
+                URL Siap: {uniqueUrlsCount}
               </span>
               <span className="text-[11px] text-zinc-400 font-mono">
-                GoogleBot / Organic Speed Mode
+                GoogleBot / Mode Kecepatan Organik
               </span>
             </div>
 
@@ -532,7 +532,7 @@ export default function Submit() {
                 className="px-5 py-2.5 rounded-xl bg-[#fe4c6f] hover:bg-[#e83b61] text-white text-xs font-bold shadow-md shadow-[#fe4c6f]/20 transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <Play className="h-4 w-4" />
-                <span>START INDEXING QUEUE</span>
+                <span>MULAI ANTREAN INDEKS</span>
               </button>
             ) : (
               <div className="flex items-center gap-2">
@@ -542,7 +542,7 @@ export default function Submit() {
                   className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
                 >
                   <Square className="h-3.5 w-3.5" />
-                  <span>STOP</span>
+                  <span>BERHENTI</span>
                 </button>
                 {isPaused ? (
                   <button
@@ -551,7 +551,7 @@ export default function Submit() {
                     className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5"
                   >
                     <Play className="h-3.5 w-3.5" />
-                    <span>Resume</span>
+                    <span>Lanjutkan</span>
                   </button>
                 ) : (
                   <button
@@ -560,7 +560,7 @@ export default function Submit() {
                     className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5"
                   >
                     <Pause className="h-3.5 w-3.5" />
-                    <span>Pause</span>
+                    <span>Jeda</span>
                   </button>
                 )}
               </div>
@@ -574,7 +574,7 @@ export default function Submit() {
       {isProcessing && (
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm" id="live-progress-bar-container">
           <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2">
-            <span>INDEXING CORE QUEUE PROGRESS</span>
+            <span>PROGRES ANTREAN INDEKS UTAMA</span>
             <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">
               {processedCount} / {totalUrlsToProcess} ({Math.round((processedCount / totalUrlsToProcess) * 100)}%)
             </span>
@@ -593,21 +593,21 @@ export default function Submit() {
           {/* Dynamic stats line */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
-              <span className="text-zinc-400 text-[10px] block font-medium">SUCCESS</span>
+              <span className="text-zinc-400 text-[10px] block font-medium uppercase">BERHASIL</span>
               <span className="font-bold text-emerald-500 font-mono">{successCount}</span>
             </div>
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
-              <span className="text-zinc-400 text-[10px] block font-medium">FAILED</span>
+              <span className="text-zinc-400 text-[10px] block font-medium uppercase">GAGAL</span>
               <span className="font-bold text-rose-500 font-mono">{failedCount}</span>
             </div>
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
-              <span className="text-zinc-400 text-[10px] block font-medium">SPEED</span>
-              <span className="font-bold text-[#fe4c6f] font-mono">{speedUrlPerMinute} URLs/m</span>
+              <span className="text-zinc-400 text-[10px] block font-medium uppercase">KECEPATAN</span>
+              <span className="font-bold text-[#fe4c6f] font-mono">{speedUrlPerMinute} URL/m</span>
             </div>
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl">
-              <span className="text-zinc-400 text-[10px] block font-medium">REMAINING</span>
+              <span className="text-zinc-400 text-[10px] block font-medium uppercase">SISA</span>
               <span className="font-bold text-sky-500 font-mono">
-                {Math.ceil((totalUrlsToProcess - processedCount))} items
+                {Math.ceil((totalUrlsToProcess - processedCount))} item
               </span>
             </div>
           </div>
@@ -622,14 +622,14 @@ export default function Submit() {
           <div className="flex items-center justify-between mb-4 border-b border-zinc-900 pb-3">
             <div className="flex items-center gap-2">
               <Terminal className="h-4.5 w-4.5 text-[#fe4c6f] animate-pulse" />
-              <span className="text-xs font-bold font-mono text-zinc-300">LIVE ENGINE TERMINAL LOG</span>
+              <span className="text-xs font-bold font-mono text-zinc-300">LOG TERMINAL MESIN LANGSUNG</span>
             </div>
             <button
               id="btn-clear-logs"
               onClick={clearLogs}
               className="text-[10px] text-zinc-500 hover:text-white font-mono cursor-pointer"
             >
-              CLEAR LOGS
+              HAPUS LOG
             </button>
           </div>
 
@@ -640,7 +640,7 @@ export default function Submit() {
           >
             {logs.length === 0 ? (
               <div className="h-full flex items-center justify-center text-zinc-600">
-                <span>SYSTEM ONLINE. STANDBY FOR QUEUE TRIGGER...</span>
+                <span>SISTEM ONLINE. SIAP MENUNGGU ANTREAN...</span>
               </div>
             ) : (
               logs.map((log) => {
@@ -668,21 +668,21 @@ export default function Submit() {
               <div className="flex items-center gap-2">
                 <Globe className="h-4.5 w-4.5 text-[#fe4c6f]" />
                 <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                  Real-time Submissions Table
+                  Tabel Hasil Submisi Real-time
                 </h3>
               </div>
 
               {/* Action Exports */}
               {urls.length > 0 && (
                 <div className="flex items-center gap-2 flex-wrap">
-                  <div className="text-xs text-zinc-400 font-medium mr-1">Export:</div>
+                  <div className="text-xs text-zinc-400 font-medium mr-1">Ekspor:</div>
                   <button
                     id="btn-export-success-csv"
                     onClick={() => handleExport('csv', 'success')}
                     className="text-[10px] bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 px-2.5 py-1 rounded-md cursor-pointer flex items-center gap-1 hover:opacity-85"
                   >
                     <Download className="h-3 w-3" />
-                    <span>Success CSV</span>
+                    <span>CSV Berhasil</span>
                   </button>
                   <button
                     id="btn-export-failed-csv"
@@ -690,7 +690,7 @@ export default function Submit() {
                     className="text-[10px] bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 px-2.5 py-1 rounded-md cursor-pointer flex items-center gap-1 hover:opacity-85"
                   >
                     <Download className="h-3 w-3" />
-                    <span>Failed CSV</span>
+                    <span>CSV Gagal</span>
                   </button>
                   <button
                     id="btn-export-all-txt"
@@ -698,7 +698,7 @@ export default function Submit() {
                     className="text-[10px] bg-zinc-100 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 px-2.5 py-1 rounded-md cursor-pointer flex items-center gap-1 hover:opacity-85"
                   >
                     <Download className="h-3 w-3" />
-                    <span>All TXT</span>
+                    <span>Semua TXT</span>
                   </button>
                 </div>
               )}
@@ -710,7 +710,7 @@ export default function Submit() {
               <input
                 id="input-results-search"
                 type="text"
-                placeholder="Search processed URLs, tokens, or responses..."
+                placeholder="Cari URL, token, atau respon hasil diproses..."
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                 className="w-full pl-10 pr-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-[#fe4c6f]"
@@ -720,9 +720,9 @@ export default function Submit() {
             {urls.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center py-6 text-zinc-400 border border-dashed border-zinc-100 dark:border-zinc-900 rounded-xl">
                 <Globe className="h-8 w-8 text-zinc-300 dark:text-zinc-700 mx-auto mb-2" />
-                <span className="text-xs font-semibold">Ready to process queue.</span>
+                <span className="text-xs font-semibold">Siap memproses antrean.</span>
                 <p className="text-[10px] text-zinc-400 max-w-xs mx-auto mt-1">
-                  Once started, live submission metrics, responses, and token assignments will populate this table instantly.
+                  Setelah dimulai, metrik submisi langsung, respon, dan alokasi token akan muncul di tabel ini secara instan.
                 </p>
               </div>
             ) : (
@@ -732,11 +732,11 @@ export default function Submit() {
                     <thead>
                       <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-900 text-zinc-500 text-[10px] uppercase font-bold select-none">
                         <th className="p-3">No</th>
-                        <th className="p-3 cursor-pointer" onClick={() => handleSort('url')}>Target URL</th>
+                        <th className="p-3 cursor-pointer" onClick={() => handleSort('url')}>URL Target</th>
                         <th className="p-3 cursor-pointer" onClick={() => handleSort('status')}>Status</th>
                         <th className="p-3">Worker</th>
-                        <th className="p-3 cursor-pointer" onClick={() => handleSort('time')}>Time (ms)</th>
-                        <th className="p-3">Response</th>
+                        <th className="p-3 cursor-pointer" onClick={() => handleSort('time')}>Waktu (ms)</th>
+                        <th className="p-3">Respon</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -758,13 +758,13 @@ export default function Submit() {
                                   : 'bg-rose-500/10 text-rose-500'
                               }`}>
                                 {item.status === 'success' ? <CheckCircle className="h-2.5 w-2.5" /> : <XCircle className="h-2.5 w-2.5" />}
-                                <span>{item.status}</span>
+                                <span>{item.status === 'success' ? 'BERHASIL' : 'GAGAL'}</span>
                               </span>
                             </td>
                             <td className="p-3 font-mono text-[10px] text-zinc-500">{item.workerId || 'Worker'}</td>
                             <td className="p-3 font-mono text-[10px] text-zinc-600">{item.time || 0}ms</td>
                             <td className="p-3 text-[11px] text-zinc-500 truncate max-w-[120px]" title={item.response}>
-                              {item.response || 'Pending'}
+                              {item.response || 'Menunggu'}
                             </td>
                           </tr>
                         );
@@ -777,7 +777,7 @@ export default function Submit() {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between text-xs pt-1 shrink-0">
                     <span className="text-zinc-500 text-[11px]">
-                      {paginatedUrls.length} of {sortedUrls.length} items
+                      {paginatedUrls.length} dari {sortedUrls.length} item
                     </span>
                     <div className="flex items-center gap-1">
                       <button

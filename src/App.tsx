@@ -117,9 +117,9 @@ export default function App() {
                   <AlertTriangle className="h-5 w-5 animate-bounce" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold">Unfinished Session Detected!</h4>
+                  <h4 className="text-sm font-bold">Sesi Belum Selesai Terdeteksi!</h4>
                   <p className="text-xs opacity-90 mt-0.5">
-                    Your previous indexing workspace was saved. Would you like to restore your active queue and submission progress?
+                    Ruang kerja pengindeksan Anda sebelumnya telah disimpan. Apakah Anda ingin memulihkan antrean dan progres pengiriman Anda?
                   </p>
                 </div>
               </div>
@@ -131,13 +131,13 @@ export default function App() {
                   className="px-4 py-2 bg-white text-amber-700 hover:bg-zinc-100 font-bold text-xs rounded-xl transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
-                  <span>Resume Workspace</span>
+                  <span>Pulihkan Ruang Kerja</span>
                 </button>
                 <button
                   id="btn-dismiss-saved-session"
                   onClick={handleDismissResume}
                   className="p-1.5 hover:bg-white/10 rounded-lg cursor-pointer text-white/85 hover:text-white"
-                  title="Dismiss and delete backup"
+                  title="Abaikan dan hapus cadangan"
                 >
                   <X className="h-4.5 w-4.5" />
                 </button>

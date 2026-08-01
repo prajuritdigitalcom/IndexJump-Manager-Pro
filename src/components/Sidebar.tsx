@@ -23,8 +23,8 @@ export default function Sidebar() {
 
   const menuItems = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
-    { id: 'submit', name: 'Submit Queue', icon: Send },
-    { id: 'history', name: 'History Logs', icon: History },
+    { id: 'submit', name: 'Antrean Submit', icon: Send },
+    { id: 'history', name: 'Riwayat Submisi', icon: History },
   ] as const;
 
   return (
@@ -36,20 +36,20 @@ export default function Sidebar() {
     >
       {/* Brand Header */}
       <div>
-        <div className="p-6 flex items-center gap-3 border-b border-zinc-800">
-          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-tr from-[#fe4c6f] to-[#e83b61] flex items-center justify-center shadow-lg shadow-[#fe4c6f]/20">
-            <Layers className="h-5 w-5 text-white animate-pulse" />
+        <div className="h-20 px-5 flex items-center gap-3 border-b border-zinc-800 shrink-0">
+          <div className="h-8.5 w-8.5 shrink-0 rounded-xl bg-gradient-to-tr from-[#fe4c6f] to-[#e83b61] flex items-center justify-center shadow-md shadow-[#fe4c6f]/20">
+            <Layers className="h-4.5 w-4.5 text-white animate-pulse" />
           </div>
           {!collapsed && (
             <motion.div 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex flex-col"
+              className="flex flex-col justify-center"
             >
-              <span className="font-bold tracking-tight text-lg bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+              <span className="font-bold tracking-tight text-base leading-snug bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
                 IndexJump
               </span>
-              <span className="text-[10px] font-mono tracking-wider text-[#fe4c6f] font-semibold">
+              <span className="text-[9px] font-mono tracking-wider text-[#fe4c6f] font-semibold leading-none">
                 MANAGER PRO
               </span>
             </motion.div>
@@ -113,7 +113,7 @@ export default function Sidebar() {
           <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-3 text-xs flex flex-col gap-1">
             <div className="flex items-center gap-2 font-semibold text-zinc-300">
               <Terminal className="h-3.5 w-3.5 text-[#fe4c6f]" />
-              <span>Active Workers</span>
+              <span>Worker Aktif</span>
             </div>
             <div className="flex gap-1.5 flex-wrap mt-1">
               {activeWorkers.map((w, i) => (
@@ -141,7 +141,7 @@ export default function Sidebar() {
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="text-[10px] text-zinc-500 font-mono">DEVELOPER</span>
+              <span className="text-[10px] text-zinc-500 font-mono">PENGEMBANG</span>
               <span className="text-xs font-semibold text-zinc-300 hover:text-[#fe4c6f] transition-colors">
                 Prajurit Digital
               </span>

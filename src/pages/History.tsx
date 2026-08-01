@@ -56,7 +56,7 @@ export default function History() {
 
   const handleDeleteSession = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to permanently delete this session record from your local storage?')) {
+    if (confirm('Apakah Anda yakin ingin menghapus catatan sesi ini secara permanen dari penyimpanan lokal Anda?')) {
       await deleteHistorySession(id);
       if (selectedSession?.id === id) {
         setSelectedSession(null);
@@ -66,7 +66,7 @@ export default function History() {
 
   const handleExportSessionCSV = () => {
     if (!selectedSession) return;
-    const headers = ['URL', 'Status', 'Response', 'Worker', 'Token Used', 'Response Time (ms)', 'Timestamp'];
+    const headers = ['URL', 'Status', 'Respon', 'Worker', 'Token Digunakan', 'Waktu Respon (ms)', 'Waktu'];
     const rows = sessionUrls.map(u => [
       u.url,
       u.status,
@@ -76,7 +76,7 @@ export default function History() {
       String(u.time || 0),
       u.timestamp
     ]);
-    csvExport(headers, rows, `indexjump_session_${selectedSession.id}_export.csv`);
+    csvExport(headers, rows, `indexjump_sesi_${selectedSession.id}_ekspor.csv`);
   };
 
   // Filter history list
@@ -95,10 +95,10 @@ export default function History() {
           <div className="space-y-1">
             <h3 className="text-sm font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-2">
               <Database className="h-4.5 w-4.5 text-[#fe4c6f]" />
-              <span>Section: Local Storage History</span>
+              <span>Bagian: Riwayat Penyimpanan Lokal</span>
             </h3>
             <p className="text-xs text-zinc-400 dark:text-zinc-500">
-              All data is stored purely client-side inside IndexedDB to maintain absolute privacy.
+              Semua data disimpan di sisi klien di dalam IndexedDB untuk menjaga privasi mutlak.
             </p>
           </div>
 
@@ -107,7 +107,7 @@ export default function History() {
             <input
               id="input-history-search"
               type="text"
-              placeholder="Search by bot, status..."
+              placeholder="Cari berdasarkan bot, status..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-[#fe4c6f]"
@@ -119,9 +119,9 @@ export default function History() {
         {filteredSessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl bg-white dark:bg-zinc-950/40 p-8">
             <Database className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-3 animate-pulse" />
-            <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">No submission records in database</span>
+            <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Belum ada catatan pengiriman dalam database</span>
             <p className="text-xs text-zinc-400 dark:text-zinc-500 max-w-sm mt-1">
-              Start submitting backlink queues in the "Submit Queue" tab and all execution outputs will persist here automatically.
+              Mulailah mengirim antrean backlink di tab "Antrean Submit" dan semua hasil eksekusi akan tersimpan di sini secara otomatis.
             </p>
           </div>
         ) : (
@@ -140,7 +140,7 @@ export default function History() {
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                        {session.totalUrls} URLs Submitted
+                        {session.totalUrls} URL Dikirim
                       </span>
                       <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded font-mono uppercase font-semibold">
                         {session.bot}
@@ -149,7 +149,7 @@ export default function History() {
                     <div className="flex items-center gap-3 text-xs text-zinc-400">
                       <span>{formatDate(session.timestamp)}</span>
                       <span>•</span>
-                      <span>Duration: {session.duration}s</span>
+                      <span>Durasi: {session.duration} detik</span>
                     </div>
                   </div>
                 </div>
@@ -157,15 +157,15 @@ export default function History() {
                 <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-0 border-zinc-100 dark:border-zinc-900 pt-3 md:pt-0">
                   <div className="flex items-center gap-6">
                     <div className="text-left md:text-right text-xs">
-                      <span className="text-emerald-500 font-bold block">{session.successCount} Success</span>
-                      <span className="text-rose-500 font-bold block">{session.failedCount} Failed</span>
+                      <span className="text-emerald-500 font-bold block">{session.successCount} Berhasil</span>
+                      <span className="text-rose-500 font-bold block">{session.failedCount} Gagal</span>
                     </div>
                     <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full border font-bold uppercase ${
                       session.status === 'completed' 
                         ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
                         : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
                     }`}>
-                      {session.status}
+                      {session.status === 'completed' ? 'SELESAI' : session.status}
                     </span>
                   </div>
 
@@ -174,7 +174,7 @@ export default function History() {
                       id={`btn-delete-history-${session.id}`}
                       onClick={(e) => handleDeleteSession(e, session.id)}
                       className="p-2 hover:bg-rose-500/10 text-zinc-400 hover:text-rose-500 rounded-xl cursor-pointer transition-colors"
-                      title="Delete record from disk"
+                      title="Hapus catatan dari memori"
                     >
                       <Trash2 className="h-4.5 w-4.5" />
                     </button>
@@ -213,10 +213,10 @@ export default function History() {
               <div className="p-6 border-b border-zinc-100 dark:border-zinc-900 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/40">
                 <div>
                   <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-50 font-sans tracking-tight">
-                    Detailed Diagnostics
+                    Rincian Diagnostik Sesi
                   </h4>
                   <p className="text-[10px] text-zinc-500 font-mono">
-                    SESSION ID: {selectedSession.id}
+                    ID SESI: {selectedSession.id}
                   </p>
                 </div>
                 <button
@@ -233,28 +233,28 @@ export default function History() {
                 {loadingDetails ? (
                   <div className="h-full flex flex-col items-center justify-center text-zinc-400">
                     <Loader2 className="h-8 w-8 animate-spin text-[#fe4c6f] mb-2" />
-                    <span className="text-xs">Asynchronously compiling session logs...</span>
+                    <span className="text-xs">Memuat data log sesi...</span>
                   </div>
                 ) : (
                   <>
                     {/* Session overview details */}
                     <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl p-4 border border-zinc-100 dark:border-zinc-900 text-xs space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-zinc-400 font-medium">Session Timestamp</span>
+                        <span className="text-zinc-400 font-medium">Waktu Sesi</span>
                         <span className="font-semibold text-zinc-800 dark:text-zinc-200">{formatDate(selectedSession.timestamp)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-zinc-400 font-medium">Target Crawler</span>
+                        <span className="text-zinc-400 font-medium">Crawler Target</span>
                         <span className="font-semibold text-[#fe4c6f]">{selectedSession.bot}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-zinc-400 font-medium">Processing Time</span>
-                        <span className="font-semibold text-zinc-800 dark:text-zinc-200 font-mono">{selectedSession.duration} seconds</span>
+                        <span className="text-zinc-400 font-medium">Waktu Pemrosesan</span>
+                        <span className="font-semibold text-zinc-800 dark:text-zinc-200 font-mono">{selectedSession.duration} detik</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-zinc-400 font-medium">Conversion</span>
+                        <span className="text-zinc-400 font-medium">Konversi</span>
                         <span className="font-mono font-bold text-emerald-500">
-                          {selectedSession.successCount} Success / {selectedSession.failedCount} Failed
+                          {selectedSession.successCount} Berhasil / {selectedSession.failedCount} Gagal
                         </span>
                       </div>
                     </div>
@@ -264,7 +264,7 @@ export default function History() {
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1">
                           <FileText className="h-3.5 w-3.5" />
-                          <span>Processed URLs ({sessionUrls.length})</span>
+                          <span>URL Diproses ({sessionUrls.length})</span>
                         </span>
                         <button
                           id="btn-export-session-csv"
@@ -272,7 +272,7 @@ export default function History() {
                           className="text-[10px] bg-zinc-900 dark:bg-zinc-50 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 cursor-pointer"
                         >
                           <Download className="h-3 w-3" />
-                          <span>Export CSV</span>
+                          <span>Ekspor CSV</span>
                         </button>
                       </div>
 
@@ -285,7 +285,7 @@ export default function History() {
                             <span className={`px-2 py-0.5 rounded text-[9px] font-semibold uppercase shrink-0 h-fit ${
                               u.status === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
                             }`}>
-                              {u.status}
+                              {u.status === 'success' ? 'BERHASIL' : 'GAGAL'}
                             </span>
                           </div>
                         ))}
@@ -296,12 +296,12 @@ export default function History() {
                     <div className="space-y-3">
                       <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1">
                         <Database className="h-3.5 w-3.5" />
-                        <span>Console Output History</span>
+                        <span>Riwayat Log Konsol</span>
                       </span>
 
                       <div className="border border-zinc-900 bg-zinc-950 rounded-xl p-4 max-h-[220px] overflow-y-auto space-y-1.5 font-mono text-[9px]">
                         {sessionLogs.length === 0 ? (
-                          <span className="text-zinc-600 block text-center">No telemetry logs saved.</span>
+                          <span className="text-zinc-600 block text-center">Tidak ada log telemetri tersimpan.</span>
                         ) : (
                           sessionLogs.map((log, idx) => (
                             <div key={idx} className="flex gap-1.5">
@@ -324,7 +324,7 @@ export default function History() {
 
               {/* Drawer Footer */}
               <div className="p-4 border-t border-zinc-100 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-900/20 text-center text-[10px] text-zinc-400">
-                IndexJump Manager Pro • Privacy Preserved Locally
+                IndexJump Manager Pro • Privasi Dijamin Lokal
               </div>
             </motion.div>
           </>
