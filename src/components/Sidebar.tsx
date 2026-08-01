@@ -107,7 +107,7 @@ export default function Sidebar() {
       </div>
 
       {/* Footer Branding & Collapse Button */}
-      <div className="p-4 border-t border-zinc-800 flex flex-col gap-4">
+      <div className="p-4 flex flex-col gap-4">
         {/* Worker state info */}
         {!collapsed && isProcessing && (
           <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-3 text-xs flex flex-col gap-1">
@@ -138,7 +138,7 @@ export default function Sidebar() {
           onRequestExpand={() => setCollapsed(false)}
         />
 
-        <div className="flex items-center justify-between">
+        <div className="pt-3 border-t border-zinc-800 flex items-center justify-between">
           {!collapsed && (
             <div className="flex flex-col">
               <span className="text-[10px] text-zinc-500 font-mono">PENGEMBANG</span>
